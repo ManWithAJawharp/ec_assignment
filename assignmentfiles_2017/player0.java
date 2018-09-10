@@ -4,7 +4,7 @@ import org.vu.contest.ContestEvaluation;
 import java.util.Random;
 import java.util.Properties;
 
-public class player0 implements ContestSubmission
+public class player6333 implements ContestSubmission
 {
 	Random rnd_;
 	ContestEvaluation evaluation_;
