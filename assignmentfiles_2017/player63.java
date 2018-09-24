@@ -8,7 +8,9 @@ public class player63 implements ContestSubmission
 {
 	Random rnd_;
 	ContestEvaluation evaluation_;
-    private int evaluations_limit_;
+	private int evaluations_limit_;
+	
+	private Agent agents[];
 	
 	public player63()
 	{
