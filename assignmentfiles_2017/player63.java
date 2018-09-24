@@ -51,7 +51,7 @@ public class player63 implements ContestSubmission
         int evals = 0;
         // init population
         // calculate fitness
-        while(evals<evaluations_limit_){
+        while(evals < evaluations_limit_){
             // Select parents
             // Apply crossover / mutation operators
             double child[] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
