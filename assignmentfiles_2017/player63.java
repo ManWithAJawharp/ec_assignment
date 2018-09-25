@@ -4,13 +4,15 @@ import org.vu.contest.ContestEvaluation;
 import java.util.Random;
 import java.util.Properties;
 
+import static java.lang.System.out;
+
 public class player63 implements ContestSubmission
 {
 	Random rnd_;
 	ContestEvaluation evaluation_;
 	private int evaluations_limit_;
 	
-	private Agent agents[];
+    private Population population_;
 	
 	public player63()
 	{
@@ -48,16 +50,21 @@ public class player63 implements ContestSubmission
     
 	public void run()
 	{
-		// Run your algorithm here
-        
         int evals = 0;
-        // init population
+
+        // Initialize population.
+        out.println("Initialize the population");
+        population_ = new Population(100, rnd_);
+
         // calculate fitness
-        while(evals < evaluations_limit_){
-            // Select parents
-            // Apply crossover / mutation operators
+        while(evals < evaluations_limit_)
+        {
+            // Select parents.
+
+            // Apply crossover / mutation operators.
             double child[] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-            // Check fitness of unknown fuction
+
+            // Check fitness of unknown function.
             Double fitness = (double) evaluation_.evaluate(child);
             evals++;
             // Select survivors
