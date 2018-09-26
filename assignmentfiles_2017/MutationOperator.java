@@ -11,7 +11,12 @@ public class MutationOperator
 
 	public double[] call(double[] genotype)
 	{
-        // Swap two genes in the genotype.
+        return simpleSwap(genotype);
+	}
+
+    // Swap two genes in the genotype.
+    public double[] simpleSwap(double[] genotype)
+    {
         int position_a = rand.nextInt(genotype.length);
         double value_a = genotype[position_a];
 
@@ -22,7 +27,6 @@ public class MutationOperator
         genotype[position_a] = value_b;
         genotype[position_b] = value_a;
 
-
 		return genotype;
-	}
+    }
 }

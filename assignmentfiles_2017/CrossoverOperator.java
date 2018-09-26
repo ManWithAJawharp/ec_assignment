@@ -11,6 +11,11 @@ public class CrossoverOperator
 
     public double[][] call(double[] first, double[] second)
     {
+        return onePoint(first, second);
+    }
+
+    public double[][] onePoint(double[] first, double[] second)
+    {
         // Implement simple one-point crossover.
         int genotype_length = first.length; // Assume both genotypes have equal length.
 
