@@ -99,7 +99,7 @@ public class Agent implements Comparable<Agent>
             }
         }
 
-		return genotype_;
+		return values;
 	}
 
     public void setFitness(double fitness)

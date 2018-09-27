@@ -45,7 +45,7 @@ public class MutationOperator
     public double[] addGaussian(double[] genotype)
     {
         // Determine a sgima from the genotype.
-        float sigma = 1;
+        double sigma = 0.5;
 
         for (int i = 0; i < genotype.length; i++)
         {
