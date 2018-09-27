@@ -37,6 +37,7 @@ public class Population
         }
     }
 
+    // Select the k fittest parents.
     public Agent[] selectParents(int k_selection)
     {
         // Sort all agents by their fitness.
@@ -46,6 +47,7 @@ public class Population
         return Arrays.copyOfRange(agents_, agents_.length - k_selection, agents_.length);
     }
 
+    // Make random pairs of selected parents to perform crossover.
     public void createOffspring(Agent[] parents)
     {
         // Create a shuffled list of indices for all selected parents.
@@ -99,6 +101,8 @@ public class Population
         agents_ = allAgents;
     }
 
+    // Apply a corssover operator to two agents. The selected operator
+    //  is defined by the first agent.
     public Agent[] applyCrossover(Agent first, Agent second)
     {
         return first.crossover(second);
