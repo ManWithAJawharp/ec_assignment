@@ -37,7 +37,7 @@ public class Agent implements Comparable<Agent>
         fitness_ = 0;
 
         // Generate a random genotype.
-        genotype_ = new double[10];
+        genotype_ = new double[11];
         for (int i=0; i < genotype_.length; i++)
         {
             genotype_[i] = 10 * (rand.nextDouble() - 0.5);
@@ -64,15 +64,22 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-			genotype_ = mutationOp_.call(genotype_);
+            // genotype_ = mutationOp_.call(genotype_);
+            genotype_ = mutationOp_.addUniform(genotype_, genotype_[10]); 
 		}
 	}
 
     public Agent[] crossover(Agent other)
     {
-        double[][] genotypes = crossOp_.call(genotype_, other.getGenotype());
+        double[][] genotypes = crossOp_.average(genotype_, other.getGenotype());
 
-        Agent[] children = {new Agent(rand_, genotypes[0]), new Agent(rand_, genotypes[1])};
+        Agent[] children = new Agent[genotypes.length];
+        
+        for (int i = 0; i < genotypes.length; i++)
+        {
+            children[i] = new Agent(rand_, genotypes[i]);
+        }
+
         return children;
     }
 
