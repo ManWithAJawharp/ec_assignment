@@ -3,21 +3,16 @@ import java.util.ArrayList;
 
 import static java.lang.System.out;
 
-public class CrossoverOperator
+public class Crossover
 {
-    private Random rand_;
+    private static Random rand_ = new Random();
 
-    public CrossoverOperator(Random rand)
+    public static void setSeed(long seed)
     {
-        rand_ = rand;
+        rand_.setSeed(seed);
     }
 
-    public double[][] call(double[] first, double[] second)
-    {
-        return onePoint(first, second);
-    }
-
-    public double[][] onePoint(double[] first, double[] second)
+    public static double[][] onePoint(double[] first, double[] second)
     {
         // Implement simple one-point crossover.
         int genotypeLength = first.length; // Assume both genotypes have equal length.

@@ -19,12 +19,11 @@ public class Agent implements Comparable<Agent>
 {
     // Advantage of best individual in Linear ranking.
     private static double bestAdvantage = 1.5;
-	private MutationOperator mutationOp_;
-	private CrossoverOperator crossOp_;
 
     private boolean fitnessComputed_;
     private double fitness_;
 	private double[] genotype_;
+    private static final int geneLength = 11;
 
     private Random rand_;
 
@@ -33,14 +32,11 @@ public class Agent implements Comparable<Agent>
 
 	public Agent(Random rand)
 	{
-        mutationOp_ = new MutationOperator(rand);
-        crossOp_ = new CrossoverOperator(rand);
-
         fitnessComputed_ = false;
         fitness_ = 0;
 
         // Generate a random genotype.
-        genotype_ = new double[10];
+        genotype_ = new double[geneLength];
         for (int i=0; i < genotype_.length; i++)
         {
             genotype_[i] = 10 * (rand.nextDouble() - 0.5);
@@ -51,9 +47,6 @@ public class Agent implements Comparable<Agent>
 
     public Agent(Random rand, double[] genotype)
     {
-        mutationOp_ = new MutationOperator(rand);
-        crossOp_ = new CrossoverOperator(rand);
-
         fitnessComputed_ = false;
         fitness_ = 0;
 
@@ -67,15 +60,16 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-            // genotype_ = mutationOp_.call(genotype_);
-            genotype_ = mutationOp_.addUniform(genotype_, 1); 
+			genotype_ = Mutation.addUniform(genotype_, 1);
 		}
 	}
 
     public Agent[] crossover(Agent other)
     {
-        double[][] genotypes = crossOp_.average(genotype_, other.getGenotype());
+        // Generate new genotypes by using a crossover operator.
+        double[][] genotypes = Crossover.onePoint(genotype_, other.getGenotype());
 
+        // Create new agents with the crossover operators.
         Agent[] children = new Agent[genotypes.length];
         
         for (int i = 0; i < genotypes.length; i++)
