@@ -40,11 +40,7 @@ public class Population
     // Select the k fittest parents.
     public Agent[] selectParents(int k_selection)
     {
-        // Sort all agents by their fitness.
-        sortAgents();
-
-        // Select the k fittest agents in the population.
-        return Arrays.copyOfRange(agents_, agents_.length - k_selection, agents_.length);
+        return ParentSelection.selectKBest(k_selection, agents_);
     }
 
     // Make random pairs of selected parents to perform crossover.
@@ -135,7 +131,7 @@ public class Population
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
-        sortAgents();
+        Population.sortAgents(agents_);
 
         int populationSurplus = agents_.length - populationSize_;
 
@@ -147,8 +143,8 @@ public class Population
         return agents_.length;
     }
 
-    private void sortAgents()
+    public static void sortAgents(Agent[] agents)
     {
-        Arrays.sort(agents_, 0, agents_.length);
+        Arrays.sort(agents, 0, agents.length);
     }
 }

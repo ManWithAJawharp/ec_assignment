@@ -23,6 +23,8 @@ public class player63 implements ContestSubmission
 	{
 		// Set seed of algortihms random process
 		rnd_.setSeed(seed);
+
+        ParentSelection.setSeed(seed);
 	}
 
 	public void setEvaluation(ContestEvaluation evaluation)
