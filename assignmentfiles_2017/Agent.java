@@ -17,9 +17,6 @@ class FitnessNotComputedException extends Exception
 
 public class Agent implements Comparable<Agent>
 {
-	private MutationOperator mutationOp_;
-	private CrossoverOperator crossOp_;
-
     private boolean fitnessComputed_;
     private double fitness_;
 	private double[] genotype_;
@@ -30,9 +27,6 @@ public class Agent implements Comparable<Agent>
 
 	public Agent(Random rand)
 	{
-        mutationOp_ = new MutationOperator(rand);
-        crossOp_ = new CrossoverOperator(rand);
-
         fitnessComputed_ = false;
         fitness_ = 0;
 
@@ -48,9 +42,6 @@ public class Agent implements Comparable<Agent>
 
     public Agent(Random rand, double[] genotype)
     {
-        mutationOp_ = new MutationOperator(rand);
-        crossOp_ = new CrossoverOperator(rand);
-
         fitnessComputed_ = false;
         fitness_ = 0;
 
@@ -64,13 +55,13 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-			genotype_ = mutationOp_.call(genotype_);
+			genotype_ = Mutation.addUniform(genotype_);
 		}
 	}
 
     public Agent[] crossover(Agent other)
     {
-        double[][] genotypes = crossOp_.call(genotype_, other.getGenotype());
+        double[][] genotypes = Crossover.onePoint(genotype_, other.getGenotype());
 
         Agent[] children = {new Agent(rand_, genotypes[0]), new Agent(rand_, genotypes[1])};
         return children;

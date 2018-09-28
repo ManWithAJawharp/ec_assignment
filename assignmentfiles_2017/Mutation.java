@@ -1,21 +1,16 @@
 import java.util.Random;
 
-public class MutationOperator
+public class Mutation
 {
-    private Random rand_;
+    private static Random rand_ = new Random();
 
-	public MutationOperator(Random rand)
-	{
-        rand_ = rand;
-	}
-
-	public double[] call(double[] genotype)
-	{
-        return addUniform(genotype);
-	}
-
+    public static void setSeed(long seed)
+    {
+        rand_.setSeed(seed);
+    }
+    //
     // Swap two genes in the genotype.
-    public double[] simpleSwap(double[] genotype)
+    public static double[] simpleSwap(double[] genotype)
     {
         int position_a = rand_.nextInt(genotype.length);
         double value_a = genotype[position_a];
@@ -30,7 +25,7 @@ public class MutationOperator
 		return genotype;
     }
 
-    public double[] addUniform(double[] genotype)
+    public static double[] addUniform(double[] genotype)
     {
         for (int i = 0; i < genotype.length; i++)
         {
@@ -42,7 +37,7 @@ public class MutationOperator
         return genotype;
     }
 
-    public double[] addGaussian(double[] genotype)
+    public static double[] addGaussian(double[] genotype)
     {
         // Determine a sgima from the genotype.
         double sigma = 0.5;
