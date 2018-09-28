@@ -3,17 +3,18 @@ import org.vu.contest.ContestEvaluation;
 
 import java.util.Random;
 import java.util.Properties;
+import java.util.Arrays;
 
 import static java.lang.System.out;
 
 public class player63 implements ContestSubmission
 {
 	Random rnd_;
-	ContestEvaluation evaluation_;
+	private ContestEvaluation evaluation_;
 	private int evaluations_limit_;
 	
     private Population population_;
-	
+
 	public player63()
 	{
 		rnd_ = new Random();
@@ -53,7 +54,7 @@ public class player63 implements ContestSubmission
         int evals = 0;
 
         // Initialize population.
-        out.println("Initialize the population");
+        out.println("\nInitialize the population");
         population_ = new Population(100, rnd_);
         // Maybe assign random fitness to first generation.
         // They are unlikely to be very good and it gives us a free 100
@@ -64,7 +65,7 @@ public class player63 implements ContestSubmission
         while(evals < evaluations_limit_)
         {
             // Select parents.
-            Agent[] parents = population_.selectParents(20);
+            Agent[] parents = population_.selectParents(10);
 
             // Apply crossover / mutation operators.
             population_.createOffspring(parents);
@@ -75,6 +76,12 @@ public class player63 implements ContestSubmission
 
             // Select survivors
             population_.trimPopulation();
+
+            // out.println(Double.toString(population_.getBestFitness()));
         }
+
+        double[] genotype = population_.getBestGenotype();
+
+        out.println(Arrays.toString(genotype));
 	}
 }

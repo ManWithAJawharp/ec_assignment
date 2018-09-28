@@ -42,6 +42,8 @@ public class Population
     {
         // Sort all agents by their fitness.
         sortAgents();
+        
+        // Assign parent probability to agents.
 
         // Select the k fittest agents in the population.
         return Arrays.copyOfRange(agents_, agents_.length - k_selection, agents_.length);
@@ -145,6 +147,32 @@ public class Population
     public int getPopulationSize()
     {
         return agents_.length;
+    }
+
+    public double[] getBestGenotype()
+    {
+        sortAgents();
+
+        Agent bestAgent = agents_[agents_.length - 1]; 
+
+        return bestAgent.getGenotype();
+    }
+
+    public double getBestFitness()
+    {
+        sortAgents();
+
+        Agent bestAgent = agents_[agents_.length - 1];
+
+        double fitness;
+
+        try
+        {
+            return bestAgent.getFitness();
+        } catch (FitnessNotComputedException e)
+        {
+            return 0;
+        }
     }
 
     private void sortAgents()

@@ -87,7 +87,10 @@ public class CrossoverOperator
 
         for (int i = 0; i < genotypeLength; i++)
         {
-            children[0][i] = (first[i] + second[i]) / 2;
+            if (rand_.nextDouble() < 0.5)
+            {
+                children[0][i] = (first[i] + second[i]) / 2;
+            }
         }
 
         return children;
