@@ -12,6 +12,7 @@ public class Crossover
         rand_.setSeed(seed);
     }
 
+    // One-point crossover.
     public static double[][] onePoint(double[] first, double[] second)
     {
         // Implement simple one-point crossover.
@@ -42,7 +43,8 @@ public class Crossover
         return children;
     }
 
-    public double[][] nPoint(double[] first, double[] second)
+    // N-point crossover.
+    public static double[][] nPoint(double[] first, double[] second)
     {
         int genotypeLength = first.length;
 
@@ -74,17 +76,26 @@ public class Crossover
         return children;
     }
 
-    public double[][] average(double[] first, double[] second)
+    // Averageing crossover.
+    public static double[][] average(double[] first, double[] second)
     {
         int genotypeLength = first.length;
 
-        double [][] children = new double[1][genotypeLength];
+        double [][] children = new double[2][genotypeLength];
 
         for (int i = 0; i < genotypeLength; i++)
         {
+            // Compute the mean of two genes with a probability
+            // of 1/2.
             if (rand_.nextDouble() < 0.5)
             {
                 children[0][i] = (first[i] + second[i]) / 2;
+                children[1][i] = (first[i] + second[i]) / 2;
+            }
+            else
+            {
+                children[0][i] = first[i];
+                children[2][i] = second[i];
             }
         }
 
