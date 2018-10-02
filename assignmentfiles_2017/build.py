@@ -3,6 +3,7 @@ import os
 
 from subprocess import call
 
+# Ignore these class files.
 class_blacklist = ['BentCigarFunction.class',
                    'KatsuuraEvaluation.class',
                    'SchaffersEvaluation.class',

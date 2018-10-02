@@ -32,4 +32,28 @@ public class ParentSelection
 
         return (Agent[]) selection.toArray();
     }
+
+    // Selects a random subset of agents and returns the best
+    // one. Repeat k times.
+    public static Agent[] tournament(int k, int tournamentSize, Agent[] agents)
+    {
+        Agent[] parents = new Agent[k];
+        for (int i = 0; i < k; i++)
+        {
+            // Randomly (with replacement) select a subset
+            // for the tournament.
+            Agent[] subset = new Agent[tournamentSize];
+            for (int j = 0; j < tournamentSize; j++)
+            {
+                int index = rand_.nextInt(agents.length);
+
+                subset[j] = agents[i];
+            }
+
+            Population.sortAgents(subset);
+            parents[i] = subset[tournamentSize - 1];
+        }
+
+        return parents;
+    }
 }

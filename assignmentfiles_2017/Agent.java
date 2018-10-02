@@ -27,7 +27,7 @@ public class Agent implements Comparable<Agent>
 
     private Random rand_;
 
-	private double mutationProb_ = 0.05;
+	private double mutationProb_ = 0.5;
     private double survivalProb_ = 0;
 
 	public Agent(Random rand)
@@ -60,7 +60,7 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-			genotype_ = Mutation.addUniform(genotype_, 1);
+			genotype_ = Mutation.addGaussian(genotype_, genotype_[10]);
 		}
 	}
 

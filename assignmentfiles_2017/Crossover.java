@@ -95,7 +95,7 @@ public class Crossover
             else
             {
                 children[0][i] = first[i];
-                children[2][i] = second[i];
+                children[1][i] = second[i];
             }
         }
 
