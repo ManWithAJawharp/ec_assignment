@@ -59,8 +59,8 @@ public class player63 implements ContestSubmission
         int evals = 0;
 
         // Initialize population.
-        out.println("\nInitialize the population");
-        out.println(evaluation_);
+        // out.println("\nInitialize the population");
+        // out.println(evaluation_);
         population_ = new Population(100, 3, rnd_);
 
         // Maybe assign random fitness to first generation.
@@ -68,7 +68,7 @@ public class player63 implements ContestSubmission
         // evaluations further on.
         population_.initFitness();
 
-        out.println("Run evolution");
+        // out.println("Run evolution");
         // calculate fitness
         while(evals < evaluations_limit_)
         {
@@ -90,6 +90,7 @@ public class player63 implements ContestSubmission
         }
 
         double[] genotype = population_.getBestGenotype();
-        out.println(Arrays.toString(genotype));
+        // out.println(Arrays.toString(genotype));
+        out.println(population_.getBestFitness());
 	}
 }
