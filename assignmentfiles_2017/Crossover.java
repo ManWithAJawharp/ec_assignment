@@ -77,7 +77,7 @@ public class Crossover
     }
 
     // Averageing crossover.
-    public static double[][] average(double[] first, double[] second)
+    public static double[][] average(double[] first, double[] second, double probability)
     {
         int genotypeLength = first.length;
 
@@ -97,6 +97,27 @@ public class Crossover
                 children[0][i] = first[i];
                 children[1][i] = second[i];
             }
+        }
+
+        return children;
+    }
+
+    public static double[][] average(double[] first, double[] second)
+    {
+        return average(first, second, 1);
+    }
+
+    public static double[][] randomlyWeightedAvg(double[] first, double[] second)
+    {
+        int genotypeLength = first.length;
+
+        double[][] children = new double[2][genotypeLength];
+
+        for (int i = 0; i < genotypeLength; i++)
+        {
+            double weight = rand_.nextDouble();
+            children[0][i] = weight * first[i] + (1 - weight) * second[i];
+            children[1][i] = weight * second[i] + (1 - weight) * first[i];
         }
 
         return children;

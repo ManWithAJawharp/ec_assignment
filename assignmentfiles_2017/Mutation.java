@@ -45,10 +45,10 @@ public class Mutation
     // Add gaussian distributed values to all genes.
     // Gaussian mean is 0 and standard deviation equals
     // sigma.
-    public static double[] addGaussian(double[] genotype, double sigma)
+    public static double[] addGaussian(double[] genotype, double sigma, double learningRate)
     {
         // Sigma must be a positive value.
-        sigma = Math.abs(sigma);
+        sigma = sigma * Math.exp(learningRate * rand_.nextGaussian());
 
         for (int i = 0; i < genotype.length; i++)
         {

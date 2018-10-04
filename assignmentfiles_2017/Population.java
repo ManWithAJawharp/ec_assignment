@@ -44,19 +44,19 @@ public class Population
     }
 
     // Select the k fittest parents.
-    public Agent[] selectParents(int k_selection)
+    public void selectParents(int k_selection)
     {
         // return ParentSelection.selectKBest(k_selection, agents_);
-        return ParentSelection.tournament(k_selection, 5, agents_);
+        parents_ =  ParentSelection.tournament(k_selection, 5, agents_);
     }
 
     // Make random pairs of selected parents to perform crossover.
-    public void createOffspring(Agent[] parents)
+    public void createOffspring()
     {
         // Create a shuffled list of indices for all selected parents.
         ArrayList<Integer> indices = new ArrayList<Integer>();
 
-        for (int i = 0; i < parents.length; i++)
+        for (int i = 0; i < parents_.length; i++)
         {
             indices.add(i);
         }
@@ -67,7 +67,7 @@ public class Population
         // Iterate through pairs of parents to 
         for (int i = 1; i < indices.size(); i += 2)
         {
-            Agent[] children = applyCrossover(parents[i-1], parents[i]); 
+            Agent[] children = parents_[i-1].crossover(parents_[i]);
 
             for (int j = 0; j < children.length; j++)
             {
@@ -75,40 +75,13 @@ public class Population
             }
         }
 
-        Agent[] offspringArray = new Agent[offspring.size()];
-        for (int i = 0; i < offspring.size(); i++)
-        {
-            offspringArray[i] = offspring.get(i);
-        }
-
+        offspring_ = offspring.toArray(new Agent[offspring.size()]);
 
         // Apply mutations to the new offspring.
-        for (int i = 0; i < offspringArray.length; i++)
+        for (int i = 0; i < offspring_.length; i++)
         {
-            offspringArray[i].mutate();
+            offspring_[i].mutate();
         }
-
-        // Concatenate agents array and offspring ArrayList into one array.
-        Agent[] allAgents = new Agent[agents_.length + offspringArray.length];
-
-        for (int i = 0; i < agents_.length; i++)
-        {
-            allAgents[i] = agents_[i];
-        }
-
-        for (int i = 0; i < offspringArray.length; i++)
-        {
-            allAgents[i + agents_.length] = offspringArray[i];
-        }
-
-        agents_ = allAgents;
-    }
-
-    // Apply a corssover operator to two agents. The selected operator
-    //  is defined by the first agent.
-    public Agent[] applyCrossover(Agent first, Agent second)
-    {
-        return first.crossover(second);
     }
 
     // Assign fitness to all agents that did not have fitness assigned
@@ -117,17 +90,16 @@ public class Population
     {
         int actualEvaluations = 0;
 
-        for (int i = 0; i < agents_.length; i++)
+        for (Agent agent : offspring_)
         {
-            if (!agents_[i].isFitnessComputed())
+            if (!agent.isFitnessComputed())
             {
                 Double fitness = (double) evaluation.evaluate(
-                        agents_[i].getFenotype());
+                        agent.getFenotype());
 
-                // Apply fitness sharing to the newly computed fitness.
-                fitness = fitnessSharing(agents_[i], fitness, shareRadius_);
+                fitness = fitnessSharing(agent, agents_, fitness, shareRadius_);
 
-                agents_[i].setFitness(fitness);
+                agent.setFitness(fitness);
 
                 evals++;
                 actualEvaluations++;
@@ -145,11 +117,10 @@ public class Population
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
-        Population.sortAgents(agents_);
+        parents_ = SurvivorSelection.tournament(
+                populationSize_ - parents_.length, 5, agents_);
 
-        int populationSurplus = agents_.length - populationSize_;
-
-        agents_ = Arrays.copyOfRange(agents_, populationSurplus, agents_.length);
+        agents_ = joinGroups(parents_, offspring_);
     }
 
     public int getPopulationSize()
@@ -207,7 +178,8 @@ public class Population
     }
 
     // Decrease an agent's fitness based on its distance to other agents.
-    private double fitnessSharing(Agent agent, double baseFitness, double shareRadius)
+    private double fitnessSharing(Agent agent, Agent[] group,
+            double baseFitness, double shareRadius)
     {
         double shareSum = 0;
 
@@ -261,5 +233,23 @@ public class Population
         {
             return 1 - distance / shareRadius;
         }
+    }
+
+    private Agent[] joinGroups(Agent[] group1, Agent[] group2)
+    {
+        // Concatenate agents array and offspring ArrayList into one array.
+        Agent[] allAgents = new Agent[group1.length + group2.length];
+
+        for (int i = 0; i < group1.length; i++)
+        {
+            allAgents[i] = group1[i];
+        }
+
+        for (int i = 0; i < group2.length; i++)
+        {
+            allAgents[i + group1.length] = group2[i];
+        }
+
+        return allAgents;
     }
 }

@@ -17,9 +17,6 @@ class FitnessNotComputedException extends Exception
 
 public class Agent implements Comparable<Agent>
 {
-    // Advantage of best individual in Linear ranking.
-    private static double bestAdvantage = 1.5;
-
     private boolean fitnessComputed_;
     private double fitness_;
 	private double[] genotype_;
@@ -27,8 +24,8 @@ public class Agent implements Comparable<Agent>
 
     private Random rand_;
 
-	private double mutationProb_ = 0.5;
-    private double survivalProb_ = 0;
+	private double mutationProb_ = 0.1;
+    private double mutationStepSize_ = 0.1;
 
 	public Agent(Random rand)
 	{
@@ -60,13 +57,14 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-			genotype_ = Mutation.addGaussian(genotype_, genotype_[10]);
+			genotype_ = Mutation.addGaussian(genotype_, genotype_[10], mutationStepSize_);
 		}
 	}
 
     public Agent[] crossover(Agent other)
     {
         // Generate new genotypes by using a crossover operator.
+        // double[][] genotypes = Crossover.randomlyWeightedAvg(genotype_, other.getGenotype());
         double[][] genotypes = Crossover.average(genotype_, other.getGenotype());
 
         // Create new agents with the crossover operators.
