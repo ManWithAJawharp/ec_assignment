@@ -91,7 +91,7 @@ public class Population
         {
             for (int i = 1; i < indices.size(); i += 2)
             {
-                Agent[] children = parents_[i-1].crossover(parents_[i]);
+                Agent[] children = crossover(parents_[i-1], parents_[i]);
 
                 for (int j = 0; j < children.length; j++)
                 {
@@ -107,6 +107,23 @@ public class Population
         {
             offspring_[i].mutate();
         }
+    }
+
+    private Agent[] crossover(Agent first, Agent second)
+    {
+        double[][] genotypes = Crossover.average(first.getGenotype(),
+                second.getGenotype());
+
+        // FGenerate new fenotypes.
+        Agent[] children = new Agent[genotypes.length];
+
+        // Create new agents from generated fenotypes.
+        for (int i = 0; i < genotypes.length; i++)
+        {
+            children[i] = new Agent(rand_, genotypes[i]);
+        }
+
+        return children;
     }
 
     public void createOffspring()

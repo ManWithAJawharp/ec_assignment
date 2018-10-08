@@ -61,23 +61,6 @@ public class Agent implements Comparable<Agent>
 		}
 	}
 
-    public Agent[] crossover(Agent other)
-    {
-        // Generate new genotypes by using a crossover operator.
-        // double[][] genotypes = Crossover.randomlyWeightedAvg(genotype_, other.getGenotype());
-        double[][] genotypes = Crossover.average(genotype_, other.getGenotype());
-
-        // Create new agents with the crossover operators.
-        Agent[] children = new Agent[genotypes.length];
-        
-        for (int i = 0; i < genotypes.length; i++)
-        {
-            children[i] = new Agent(rand_, genotypes[i]);
-        }
-
-        return children;
-    }
-
     public double[] getGenotype()
     {
         return genotype_;
