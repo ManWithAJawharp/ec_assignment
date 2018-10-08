@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from subprocess import run
 
 evaluations = ["SphereEvaluation",
@@ -5,7 +6,7 @@ evaluations = ["SphereEvaluation",
                "SchaffersEvaluation",
                "KatsuuraEvaluation"]
 
-evaluation = evaluations[0]
+evaluation = evaluations[1]
 
 print(f"Running function {evaluation}")
 scores = []
