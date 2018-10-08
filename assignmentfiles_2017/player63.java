@@ -61,7 +61,7 @@ public class player63 implements ContestSubmission
         // Initialize population.
         out.println("\nInitialize the population");
         out.println(evaluation_);
-        population_ = new Population(100, 3, rnd_);
+        population_ = new Population(100, 10, 20, 3, rnd_);
 
         // Maybe assign random fitness to first generation.
         // They are unlikely to be very good and it gives us a free 100
@@ -72,15 +72,7 @@ public class player63 implements ContestSubmission
         // calculate fitness
         while(evals < evaluations_limit_)
         {
-            // Select parents.
-            population_.selectParents(10);
-
-            // Apply crossover, create offspring and apply  mutation
-            // operators.
-            population_.createOffspring();
-
-            // Select survivors
-            population_.trimPopulation();
+            population_.step();
 
             // Check fitness of unknown function.
             int evaluatedAgents = population_.evaluate(evaluation_, evals, evaluations_limit_);

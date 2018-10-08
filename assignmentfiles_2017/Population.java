@@ -16,9 +16,13 @@ public class Population
     private Agent[] offspring_;
 
     private int populationSize_;
+    private int parentsSize_;
+    private int offspringSize_;
+
     private double shareRadius_;
 
-    public Population(int n_agents, double shareRadius, Random rand)
+    public Population(int n_agents, int n_parents, int n_children,
+            double shareRadius, Random rand)
     {
         rand_ = rand;
 
@@ -30,6 +34,8 @@ public class Population
         }
 
         populationSize_ = n_agents;
+        parentsSize_ = n_parents;
+        offspringSize_ = n_children;
 
         shareRadius_ = shareRadius;
     }
@@ -43,6 +49,17 @@ public class Population
         }
     }
 
+    // Update the population by introducting new offspring and trimming the
+    // population.
+    public void step()
+    {
+        selectParents(parentsSize_);
+
+        createOffspring();
+
+        trimPopulation();
+    }
+
     // Select the k fittest parents.
     public void selectParents(int k_selection)
     {
@@ -50,8 +67,13 @@ public class Population
         parents_ =  ParentSelection.tournament(k_selection, 5, agents_);
     }
 
+    public void selectParents()
+    {
+        selectParents(parentsSize_);
+    }
+
     // Make random pairs of selected parents to perform crossover.
-    public void createOffspring()
+    public void createOffspring(int k_children)
     {
         // Create a shuffled list of indices for all selected parents.
         ArrayList<Integer> indices = new ArrayList<Integer>();
@@ -65,23 +87,31 @@ public class Population
         ArrayList<Agent> offspring = new ArrayList<Agent>();
 
         // Iterate through pairs of parents to 
-        for (int i = 1; i < indices.size(); i += 2)
+        while (offspring.size() < k_children)
         {
-            Agent[] children = parents_[i-1].crossover(parents_[i]);
-
-            for (int j = 0; j < children.length; j++)
+            for (int i = 1; i < indices.size(); i += 2)
             {
-                offspring.add(children[j]);
+                Agent[] children = parents_[i-1].crossover(parents_[i]);
+
+                for (int j = 0; j < children.length; j++)
+                {
+                    offspring.add(children[j]);
+                }
             }
         }
 
         offspring_ = offspring.toArray(new Agent[offspring.size()]);
-
+        offspring_ = Arrays.copyOfRange(offspring_, 0, k_children);
         // Apply mutations to the new offspring.
         for (int i = 0; i < offspring_.length; i++)
         {
             offspring_[i].mutate();
         }
+    }
+
+    public void createOffspring()
+    {
+        createOffspring(offspringSize_);
     }
 
     // Assign fitness to all agents that did not have fitness assigned
