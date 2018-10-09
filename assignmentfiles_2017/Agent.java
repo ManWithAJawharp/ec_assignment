@@ -39,7 +39,7 @@ public class Agent implements Comparable<Agent>
             genotype_[i] = 10 * (rand.nextDouble() - 0.5);
         }
 
-		rand_ = rand;
+        rand_ = rand;
 	}
 
     public Agent(Random rand, double[] genotype)
@@ -60,23 +60,6 @@ public class Agent implements Comparable<Agent>
 			genotype_ = Mutation.addGaussian(genotype_, genotype_[10], mutationStepSize_);
 		}
 	}
-
-    public Agent[] crossover(Agent other)
-    {
-        // Generate new genotypes by using a crossover operator.
-        // double[][] genotypes = Crossover.randomlyWeightedAvg(genotype_, other.getGenotype());
-        double[][] genotypes = Crossover.average(genotype_, other.getGenotype());
-
-        // Create new agents with the crossover operators.
-        Agent[] children = new Agent[genotypes.length];
-        
-        for (int i = 0; i < genotypes.length; i++)
-        {
-            children[i] = new Agent(rand_, genotypes[i]);
-        }
-
-        return children;
-    }
 
     public double[] getGenotype()
     {

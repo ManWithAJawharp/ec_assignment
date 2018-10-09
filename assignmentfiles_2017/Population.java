@@ -16,9 +16,13 @@ public class Population
     private Agent[] offspring_;
 
     private int populationSize_;
+    private int parentsSize_;
+    private int offspringSize_;
+
     private double shareRadius_;
 
-    public Population(int n_agents, double shareRadius, Random rand)
+    public Population(int n_agents, int n_parents, int n_children,
+            double shareRadius, Random rand)
     {
         rand_ = rand;
 
@@ -30,6 +34,8 @@ public class Population
         }
 
         populationSize_ = n_agents;
+        parentsSize_ = n_parents;
+        offspringSize_ = n_children;
 
         shareRadius_ = shareRadius;
     }
@@ -39,8 +45,19 @@ public class Population
     {
         for (int i = 0; i < agents_.length; i++)
         {
-            agents_[i].setFitness(-100);
+            agents_[i].setFitness(10 * rand_.nextDouble() - 50);
         }
+    }
+
+    // Update the population by introducting new offspring and trimming the
+    // population.
+    public void step()
+    {
+        selectParents();
+
+        createOffspring();
+
+        trimPopulation();
     }
 
     // Select the k fittest parents.
@@ -50,32 +67,114 @@ public class Population
         parents_ =  ParentSelection.tournament(k_selection, 5, agents_);
     }
 
-    // Make random pairs of selected parents to perform crossover.
-    public void createOffspring()
+    public void selectParents()
     {
-        // Create a shuffled list of indices for all selected parents.
+        selectParents(parentsSize_);
+    }
+
+    // Randomly select k migrants and remove them from the agents set.
+    public Agent[] emigrate(int k_emigrants)
+    {
+        int[] indices = randomSelection(agents_, k_emigrants);
+
+        Agent[] staying = new Agent[agents_.length - k_emigrants];
+        Agent[] emigrants = new Agent[k_emigrants];
+        int processedEmigrants = 0;
+
+        for (int i = 0; i < agents_.length; i++)
+        {
+            // Check whether agent index is selected for migration.
+            boolean foundEmigrant = false;
+
+            if (processedEmigrants < k_emigrants)
+            {
+                for (int index : indices)
+                {
+                    // If a selected
+                    if (i == index)
+                    {
+                        emigrants[processedEmigrants] = agents_[index];
+                        processedEmigrants++;
+                        foundEmigrant = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!foundEmigrant)
+            {
+                staying[i-processedEmigrants] = agents_[i];
+            }
+        }
+
+        agents_ = staying;
+
+        return emigrants;
+    }
+
+    public void immigrate(Agent[] immigrants)
+    {
+        int totalPopulation = agents_.length + immigrants.length;
+
+        Agent[] newPop = new Agent[totalPopulation];
+
+        for (int i = 0; i < agents_.length; i++)
+        {
+            newPop[i] = agents_[i];
+        }
+
+        for (int i = 0; i < immigrants.length; i++)
+        {
+            newPop[i + agents_.length] = immigrants[i];
+        }
+
+        agents_ = newPop;
+    }
+
+    private int[] randomSelection(Agent[] set, int k)
+    {
         ArrayList<Integer> indices = new ArrayList<Integer>();
 
-        for (int i = 0; i < parents_.length; i++)
+        for (int i = 0; i < set.length; i++)
         {
             indices.add(i);
         }
+
         Collections.shuffle(indices);
+
+        int[] array = new int[k];
+        for (int i = 0; i < k; i++)
+        {
+            array[i] = indices.get(i);
+        }
+
+        return array;
+    }
+
+    // Make random pairs of selected parents to perform crossover.
+    public void createOffspring(int k_children)
+    {
+        int[] indices = randomSelection(parents_, parents_.length);
 
         ArrayList<Agent> offspring = new ArrayList<Agent>();
 
-        // Iterate through pairs of parents to 
-        for (int i = 1; i < indices.size(); i += 2)
+        // Iterate through pairs of parents to create new offspring.
+        while (offspring.size() < k_children)
         {
-            Agent[] children = parents_[i-1].crossover(parents_[i]);
-
-            for (int j = 0; j < children.length; j++)
+            for (int i = 1; i < indices.length; i += 2)
             {
-                offspring.add(children[j]);
+                Agent[] children = crossover(parents_[indices[i-1]],
+                        parents_[indices[i]]);
+
+                for (int j = 0; j < children.length; j++)
+                {
+                    offspring.add(children[j]);
+                }
             }
         }
 
         offspring_ = offspring.toArray(new Agent[offspring.size()]);
+        offspring_ = Arrays.copyOfRange(offspring_, 0, k_children);
 
         // Apply mutations to the new offspring.
         for (int i = 0; i < offspring_.length; i++)
@@ -84,13 +183,36 @@ public class Population
         }
     }
 
+    private Agent[] crossover(Agent first, Agent second)
+    {
+        double[][] genotypes = Crossover.average(first.getGenotype(),
+                second.getGenotype());
+
+        // FGenerate new fenotypes.
+        Agent[] children = new Agent[genotypes.length];
+
+        // Create new agents from generated fenotypes.
+        for (int i = 0; i < genotypes.length; i++)
+        {
+            children[i] = new Agent(rand_, genotypes[i]);
+        }
+
+        return children;
+    }
+
+    public void createOffspring()
+    {
+        createOffspring(offspringSize_);
+    }
+
     // Assign fitness to all agents that did not have fitness assigned
     // to them before.
-    public int evaluate(ContestEvaluation evaluation, int evals, int evaluationLimit)
+    public int evaluate(ContestEvaluation evaluation, int evals,
+            int evaluationLimit, Agent[] agents)
     {
         int actualEvaluations = 0;
 
-        for (Agent agent : offspring_)
+        for (Agent agent : agents)
         {
             if (!agent.isFitnessComputed())
             {
@@ -114,11 +236,16 @@ public class Population
         return actualEvaluations;
     }
 
+    public int evaluate(ContestEvaluation evaluation, int evals, int evaluationLimit)
+    {
+        return evaluate(evaluation, evals, evaluationLimit, offspring_);
+    }
+
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
         parents_ = SurvivorSelection.tournament(
-                populationSize_ - parents_.length, 5, agents_);
+                populationSize_ - offspring_.length, 5, agents_);
 
         agents_ = joinGroups(parents_, offspring_);
     }
@@ -170,6 +297,11 @@ public class Population
         }
 
         return fitness;
+    }
+
+    public Agent[] getAgents()
+    {
+        return agents_;
     }
 
     public static void sortAgents(Agent[] agents)

@@ -14,6 +14,7 @@ public class player63 implements ContestSubmission
 	private int evaluations_limit_;
 	
     private Population population_;
+    private IslandGroup islands_;
 
 	public player63()
 	{
@@ -58,39 +59,39 @@ public class player63 implements ContestSubmission
 	{
         int evals = 0;
 
+        int n_islands = 1;
+        int n_agents = 200;
+        int n_parents = 20;
+        int n_children = 40;
+        double fitnessSharing = 3;
+        int n_migrants = 5;
+        int epoch = 150;
+
         // Initialize population.
-        // out.println("\nInitialize the population");
-        // out.println(evaluation_);
-        population_ = new Population(100, 3, rnd_);
+        out.println("\nInitialize the population");
+        out.println(evaluation_);
+        islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
+                fitnessSharing, rnd_);
 
-        // Maybe assign random fitness to first generation.
-        // They are unlikely to be very good and it gives us a free 100
-        // evaluations further on.
-        population_.initFitness();
+        int generations = 0;
 
-        // out.println("Run evolution");
-        // calculate fitness
+        out.println("Run evolution");
+
+        // Calculate fitness
         while(evals < evaluations_limit_)
         {
-            // Select parents.
-            population_.selectParents(10);
-
-            // Apply crossover, create offspring and apply  mutation
-            // operators.
-            population_.createOffspring();
-
-            // Select survivors
-            population_.trimPopulation();
+            islands_.step();
 
             // Check fitness of unknown function.
-            int evaluatedAgents = population_.evaluate(evaluation_, evals, evaluations_limit_);
-            evals += evaluatedAgents;
+            evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
+
+            if (generations % epoch == 0)
+            {
+                islands_.migrate(n_migrants);
+            }
 
             // out.println(Double.toString(population_.getAverageFitness()));
+            generations++;
         }
-
-        double[] genotype = population_.getBestGenotype();
-        // out.println(Arrays.toString(genotype));
-        out.println(population_.getBestFitness());
 	}
 }
