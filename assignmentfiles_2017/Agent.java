@@ -39,7 +39,7 @@ public class Agent implements Comparable<Agent>
             genotype_[i] = 10 * (rand.nextDouble() - 0.5);
         }
 
-		rand_ = rand;
+        rand_ = rand;
 	}
 
     public Agent(Random rand, double[] genotype)

@@ -45,7 +45,7 @@ public class Population
     {
         for (int i = 0; i < agents_.length; i++)
         {
-            agents_[i].setFitness(-100);
+            agents_[i].setFitness(10 * rand_.nextDouble() - 50);
         }
     }
 
@@ -133,11 +133,12 @@ public class Population
 
     // Assign fitness to all agents that did not have fitness assigned
     // to them before.
-    public int evaluate(ContestEvaluation evaluation, int evals, int evaluationLimit)
+    public int evaluate(ContestEvaluation evaluation, int evals,
+            int evaluationLimit, Agent[] agents)
     {
         int actualEvaluations = 0;
 
-        for (Agent agent : offspring_)
+        for (Agent agent : agents)
         {
             if (!agent.isFitnessComputed())
             {
@@ -159,6 +160,11 @@ public class Population
         }
 
         return actualEvaluations;
+    }
+
+    public int evaluate(ContestEvaluation evaluation, int evals, int evaluationLimit)
+    {
+        return evaluate(evaluation, evals, evaluationLimit, offspring_);
     }
 
     // Kill a subset of the population to get it back to the original number.
@@ -217,6 +223,11 @@ public class Population
         }
 
         return fitness;
+    }
+
+    public Agent[] getAgents()
+    {
+        return agents_;
     }
 
     public static void sortAgents(Agent[] agents)

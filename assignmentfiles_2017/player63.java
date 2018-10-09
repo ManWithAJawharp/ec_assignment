@@ -68,6 +68,10 @@ public class player63 implements ContestSubmission
         // evaluations further on.
         population_.initFitness();
 
+        int evaluatedAgents = population_.evaluate(evaluation_, evals,
+                evaluations_limit_, population_.getAgents());
+        evals += evaluatedAgents;
+
         out.println("Run evolution");
         // calculate fitness
         while(evals < evaluations_limit_)
@@ -75,7 +79,7 @@ public class player63 implements ContestSubmission
             population_.step();
 
             // Check fitness of unknown function.
-            int evaluatedAgents = population_.evaluate(evaluation_, evals, evaluations_limit_);
+            evaluatedAgents = population_.evaluate(evaluation_, evals, evaluations_limit_);
             evals += evaluatedAgents;
 
             // out.println(Double.toString(population_.getAverageFitness()));
