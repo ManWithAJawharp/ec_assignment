@@ -37,4 +37,20 @@ public class SurvivorSelection
 
         return agentsList.toArray(survivors);
     }
+
+    public static Agent[] roundRobin()
+    {
+        // Blah
+        return new Agent[50];
+    }
+
+    public static Agent[] roulette()
+    {
+        return new Agent[50];
+    }
+
+    public static Agent[] linearRanking()
+    {
+        return new Agent[50];
+    }
 }
