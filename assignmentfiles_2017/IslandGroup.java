@@ -1,6 +1,10 @@
 import org.vu.contest.ContestEvaluation;
 
 import java.util.Random;
+import java.util.Collections;
+import java.util.ArrayList;
+
+import static java.lang.System.out;
 
 public class IslandGroup
 {
@@ -32,11 +36,7 @@ public class IslandGroup
     {
         for (Population island : islands_)
         {
-            island.selectParents();
-
-            island.createOffspring();
-
-            island.trimPopulation();
+            island.step();
         }
     }
 
@@ -59,7 +59,30 @@ public class IslandGroup
     }
 
     // Migrate individuals between islands.
-    public void migrate()
+    public void migrate(int k_migrants)
     {
+        // Collect migrants from all islands.
+        Agent[][] migrants = new Agent[islands_.length][k_migrants];
+
+        for (int i = 0; i < islands_.length; i++)
+        {
+            migrants[i] = islands_[i].emigrate(k_migrants);
+        }
+
+        // Create a randomly shuffled list of island indices.
+        ArrayList<Integer> indices = new ArrayList<Integer>();
+
+        for (int i = 0; i < islands_.length; i++)
+        {
+            indices.add(i);
+        }
+
+        Collections.shuffle(indices);
+
+        // Send groups of migrants to different islands.
+        for (int i = 0; i < islands_.length; i++)
+        {
+            islands_[i].immigrate(migrants[indices.get(i)]);
+        }
     }
 }

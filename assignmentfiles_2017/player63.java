@@ -64,12 +64,16 @@ public class player63 implements ContestSubmission
         int n_parents = 20;
         int n_children = 40;
         double fitnessSharing = 3;
+        int n_migrants = 5;
+        int epoch = 150;
 
         // Initialize population.
         out.println("\nInitialize the population");
         out.println(evaluation_);
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
                 fitnessSharing, rnd_);
+
+        int generations = 0;
 
         out.println("Run evolution");
 
@@ -81,7 +85,13 @@ public class player63 implements ContestSubmission
             // Check fitness of unknown function.
             evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
+            if (generations % epoch == 0)
+            {
+                islands_.migrate(n_migrants);
+            }
+
             // out.println(Double.toString(population_.getAverageFitness()));
+            generations++;
         }
 
         // double[] genotype = islands_.getBestGenotype();

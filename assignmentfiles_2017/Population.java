@@ -53,7 +53,7 @@ public class Population
     // population.
     public void step()
     {
-        selectParents(parentsSize_);
+        selectParents();
 
         createOffspring();
 
@@ -72,26 +72,99 @@ public class Population
         selectParents(parentsSize_);
     }
 
-    // Make random pairs of selected parents to perform crossover.
-    public void createOffspring(int k_children)
+    // Randomly select k migrants and remove them from the agents set.
+    public Agent[] emigrate(int k_emigrants)
     {
-        // Create a shuffled list of indices for all selected parents.
+        int[] indices = randomSelection(agents_, k_emigrants);
+
+        Agent[] staying = new Agent[agents_.length - k_emigrants];
+        Agent[] emigrants = new Agent[k_emigrants];
+        int processedEmigrants = 0;
+
+        for (int i = 0; i < agents_.length; i++)
+        {
+            // Check whether agent index is selected for migration.
+            boolean foundEmigrant = false;
+
+            if (processedEmigrants < k_emigrants)
+            {
+                for (int index : indices)
+                {
+                    // If a selected
+                    if (i == index)
+                    {
+                        emigrants[processedEmigrants] = agents_[index];
+                        processedEmigrants++;
+                        foundEmigrant = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!foundEmigrant)
+            {
+                staying[i-processedEmigrants] = agents_[i];
+            }
+        }
+
+        agents_ = staying;
+
+        return emigrants;
+    }
+
+    public void immigrate(Agent[] immigrants)
+    {
+        int totalPopulation = agents_.length + immigrants.length;
+
+        Agent[] newPop = new Agent[totalPopulation];
+
+        for (int i = 0; i < agents_.length; i++)
+        {
+            newPop[i] = agents_[i];
+        }
+
+        for (int i = 0; i < immigrants.length; i++)
+        {
+            newPop[i + agents_.length] = immigrants[i];
+        }
+
+        agents_ = newPop;
+    }
+
+    private int[] randomSelection(Agent[] set, int k)
+    {
         ArrayList<Integer> indices = new ArrayList<Integer>();
 
-        for (int i = 0; i < parents_.length; i++)
+        for (int i = 0; i < set.length; i++)
         {
             indices.add(i);
         }
+
         Collections.shuffle(indices);
+
+        int[] array = new int[k];
+        for (int i = 0; i < k; i++)
+        {
+            array[i] = indices.get(i);
+        }
+
+        return array;
+    }
+
+    // Make random pairs of selected parents to perform crossover.
+    public void createOffspring(int k_children)
+    {
+        int[] indices = randomSelection(parents_, parents_.length);
 
         ArrayList<Agent> offspring = new ArrayList<Agent>();
 
-        // Iterate through pairs of parents to 
+        // Iterate through pairs of parents to create new offspring.
         while (offspring.size() < k_children)
         {
-            for (int i = 1; i < indices.size(); i += 2)
+            for (int i = 1; i < indices.length; i += 2)
             {
-                Agent[] children = crossover(parents_[i-1], parents_[i]);
+                Agent[] children = crossover(parents_[indices[i-1]],
+                        parents_[indices[i]]);
 
                 for (int j = 0; j < children.length; j++)
                 {
@@ -102,6 +175,7 @@ public class Population
 
         offspring_ = offspring.toArray(new Agent[offspring.size()]);
         offspring_ = Arrays.copyOfRange(offspring_, 0, k_children);
+
         // Apply mutations to the new offspring.
         for (int i = 0; i < offspring_.length; i++)
         {
@@ -171,7 +245,7 @@ public class Population
     public void trimPopulation()
     {
         parents_ = SurvivorSelection.tournament(
-                populationSize_ - parents_.length, 5, agents_);
+                populationSize_ - offspring_.length, 5, agents_);
 
         agents_ = joinGroups(parents_, offspring_);
     }
