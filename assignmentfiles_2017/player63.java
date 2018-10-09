@@ -14,6 +14,7 @@ public class player63 implements ContestSubmission
 	private int evaluations_limit_;
 	
     private Population population_;
+    private IslandGroup islands_;
 
 	public player63()
 	{
@@ -58,34 +59,32 @@ public class player63 implements ContestSubmission
 	{
         int evals = 0;
 
+        int n_islands = 1;
+        int n_agents = 200;
+        int n_parents = 20;
+        int n_children = 40;
+        double fitnessSharing = 3;
+
         // Initialize population.
         out.println("\nInitialize the population");
         out.println(evaluation_);
-        population_ = new Population(100, 10, 20, 3, rnd_);
-
-        // Maybe assign random fitness to first generation.
-        // They are unlikely to be very good and it gives us a free 100
-        // evaluations further on.
-        population_.initFitness();
-
-        int evaluatedAgents = population_.evaluate(evaluation_, evals,
-                evaluations_limit_, population_.getAgents());
-        evals += evaluatedAgents;
+        islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
+                fitnessSharing, rnd_);
 
         out.println("Run evolution");
-        // calculate fitness
+
+        // Calculate fitness
         while(evals < evaluations_limit_)
         {
-            population_.step();
+            islands_.step();
 
             // Check fitness of unknown function.
-            evaluatedAgents = population_.evaluate(evaluation_, evals, evaluations_limit_);
-            evals += evaluatedAgents;
+            evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
             // out.println(Double.toString(population_.getAverageFitness()));
         }
 
-        double[] genotype = population_.getBestGenotype();
-        out.println(Arrays.toString(genotype));
+        // double[] genotype = islands_.getBestGenotype();
+        // out.println(Arrays.toString(genotype));
 	}
 }
