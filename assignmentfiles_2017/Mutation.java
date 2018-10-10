@@ -59,4 +59,38 @@ public class Mutation
 
         return genotype;
     }
+
+    public static double[] adaptiveMutation(double[] x, double[] sigma, 
+            double tauPrime, double tau, double minimumSigma)
+    {
+        double generalStep = tau * rand_.nextGaussian();
+
+        for (int i = 0; i < sigma.length; i++)
+        {
+            sigma[i] = sigma[i] * Math.exp(tauPrime * rand_.nextGaussian()
+                    + generalStep);
+            
+            // Prevent sigma's from getting too small.
+            if (sigma[i] < minimumSigma)
+                sigma[i] = minimumSigma;
+    
+            // Update the genes.
+            x[i] = x[i] + sigma[i] * rand_.nextGaussian();
+        }
+
+        double[] genotype = new double[x.length + sigma.length];
+
+        // Combine updated x and sigma into a new genotype.
+        for (int i = 0; i < x.length; i++)
+        {
+            genotype[i] = x[i];
+        }
+
+        for (int i = 0; i < sigma.length; i++)
+        {
+            genotype[sigma.length + i] = sigma[i];
+        }
+
+        return genotype;
+    }
 }

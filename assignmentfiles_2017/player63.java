@@ -59,23 +59,23 @@ public class player63 implements ContestSubmission
 	{
         int evals = 0;
 
-        int n_islands = 1;
-        int n_agents = 200;
+        int n_islands = 3;
+        int n_agents = 100;
         int n_parents = 20;
-        int n_children = 40;
+        int n_children = 20;
         double fitnessSharing = 3;
         int n_migrants = 5;
-        int epoch = 150;
+        int epoch = 100;
 
         // Initialize population.
-        out.println("\nInitialize the population");
-        out.println(evaluation_);
+        // out.println("\nInitialize the population");
+        // out.println(evaluation_);
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
                 fitnessSharing, rnd_);
 
         int generations = 0;
 
-        out.println("Run evolution");
+        // out.println("Run evolution");
 
         // Calculate fitness
         while(evals < evaluations_limit_)

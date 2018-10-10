@@ -20,26 +20,33 @@ public class Agent implements Comparable<Agent>
     private boolean fitnessComputed_;
     private double fitness_;
 	private double[] genotype_;
-    private static final int geneLength = 11;
+    private static final int geneLength = 10;
 
     private Random rand_;
 
-	private double mutationProb_ = 0.1;
+	private double mutationProb_ = 0.01;
     private double mutationStepSize_ = 0.1;
+    private double mutationStepSizePrime_ = 0.1;
 
 	public Agent(Random rand)
 	{
+        rand_ = rand;
+
         fitnessComputed_ = false;
         fitness_ = 0;
 
         // Generate a random genotype.
-        genotype_ = new double[geneLength];
-        for (int i=0; i < genotype_.length; i++)
+        genotype_ = new double[geneLength * 2];
+
+        for (int i = 0; i < genotype_.length / 2; i++)
         {
-            genotype_[i] = 10 * (rand.nextDouble() - 0.5);
+            genotype_[i] = 10 * rand_.nextDouble() - 5;
         }
 
-        rand_ = rand;
+        for (int i=genotype_.length / 2; i < genotype_.length; i++)
+        {
+            genotype_[i] = Math.exp(rand_.nextGaussian());
+        }
 	}
 
     public Agent(Random rand, double[] genotype)
@@ -57,7 +64,13 @@ public class Agent implements Comparable<Agent>
 		// Apply a mutation operator to the genotype with a certain probability.
 		if (rand_.nextDouble() < mutationProb_)
 		{
-			genotype_ = Mutation.addGaussian(genotype_, genotype_[10], mutationStepSize_);
+            double[] x = Arrays.copyOfRange(genotype_, 0,
+                    genotype_.length / 2);
+            double[] sigma = Arrays.copyOfRange(genotype_,
+                    genotype_.length / 2, genotype_.length);
+
+			genotype_ = Mutation.adaptiveMutation(x, sigma, mutationStepSizePrime_,
+                    mutationStepSize_, 0.001);
 		}
 	}
 
