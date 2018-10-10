@@ -1,6 +1,6 @@
 import random
 from statistics import mean
-from math import sin, cos, tan
+from math import sin, cos, tan, exp
 
 class population:
 	def __init__(self):
@@ -8,9 +8,10 @@ class population:
 		self.pop_size = 100
 		self.pop_fitness = []
 		
-		self.max_gen = 1000
+		self.max_gen = 5000
 		self.current_gen = 0
 		self.k = 30
+		self.s = 2
 		self.p_mutate = 0.2
 		self.i_mutate = 0.1
 	
@@ -45,6 +46,77 @@ class population:
 		self.population = sorted_pop[0:k]
 		self.pop_fitness = sorted_fitness[0:k]
 	
+	def select_round_robin_tournament(self, k, q):
+		pass	#Coming soon...
+	
+	def select_fitness_roulette(self, k):									#Fitness Proportionate Selection (FPS), selects k parents/survivors
+		sorted_fitness, sorted_pop = self.sort_pop()							#Sort population by fitness
+		sum_fitness = sum(sorted_fitness)
+		p_fps = [fitness/sum_fitness for fitness in sorted_fitness]				#Calculate probability for each individual according to FPS formula
+		pop_selection = []														#Initiate selected survivor population list
+		fitness_selection = []													#Initiate fitness corresponding to pop_selection
+		for a in range(0, k):
+			roulette = random.uniform(0, 1)											#Roll roulette
+			p_cumulative = 0														#This variable is used to check which individual the roulette has landed on
+			particle_index = 0														#Initiate individual index count (used to add individual to survivor list)
+			for particle_probability in p_fps:										#Loop for each individual
+				p_cumulative = p_cumulative + particle_probability						#Update p_cumulative with individual's probability when checking each individual
+				if p_cumulative >= roulette:											#Individual is selected when p_cumulative exceeds roulette value
+					#print(particle_index)
+					pop_selection.append(sorted_pop[particle_index])
+					fitness_selection.append(sorted_fitness[particle_index])
+					break																#Break for-loop when selection is made
+				particle_index = particle_index + 1										#Update particle index counter
+		
+		self.population = pop_selection										#Update selected parents/survivors into class attribute
+		self.pop_fitness = fitness_selection
+	
+	def select_rank_roulette_linear(self, k, s):							#Rank Based Selection: Linear Ranking, selects k partents/survivors with parameter 1 <= s <= 2
+		sorted_fitness, sorted_pop = self.sort_pop()							#Sort population by fitness
+		pop_rank = list(reversed(range(self.pop_size)))							#Create rank list corresponding to a sorted population
+		p_lin_rank = [((2-s)/self.pop_size)+(2*rank*(s-1)/(self.pop_size*(self.pop_size-1))) for rank in pop_rank]	#Calculate weights for each individual according to Linear Ranking forumula
+		p_lin_rank = [p/sum(p_lin_rank) for p in p_lin_rank]					#Normalise weight values in order to be used as probability values
+		
+		pop_selection = []														#Initiate selected survivor population list
+		fitness_selection = []													#Initiate fitness corresponding to pop_selection
+		for a in range(0, k):
+			roulette = random.uniform(0, 1)											#Roll roulette
+			p_cumulative = 0														#This is used to check which individual the roulette has landed on
+			particle_index = 0														#Initiate individual index count (used to add individual to survivor list)
+			for particle_probability in p_lin_rank:									#Loop for each individual
+				p_cumulative = p_cumulative + particle_probability						#Update p_cumulative when checking each individual
+				if p_cumulative >= roulette:											#Individual is selected when p_cumulative exceeds roulette value
+					pop_selection.append(sorted_pop[particle_index])
+					fitness_selection.append(sorted_fitness[particle_index])
+					break																#Break for-loop when selection is made
+				particle_index = particle_index + 1									#Update particle index counter
+		
+		self.population = pop_selection										#Update selected parents/survivors into class attribute
+		self.pop_fitness = fitness_selection
+	
+	def select_rank_roulette_exponential(self, k):									#Rank Based Selection: Exponential Ranking, selects k parents/survivors
+		sorted_fitness, sorted_pop = self.sort_pop()									#Sort population by fitness
+		pop_rank = list(reversed(range(self.pop_size)))									#This is a list counting down from 1-pop_size to 0 (i value in formula)
+		p_lin_rank_weights = [1 - exp(-rank) for rank in pop_rank]						#Calculate weights for each individual according to Exponential Ranking formula
+		p_lin_rank = [p/sum(p_lin_rank_weights) for p in p_lin_rank_weights]			#Normalise weight values in order to be used as probability values
+		
+		pop_selection = []																#Initiate selected survivor population list
+		fitness_selection = []															#Initiate fitness corresponding to pop_selection
+		for a in range(0, k):
+			roulette = random.uniform(0, 1)													#Roll roulette
+			p_cumulative = 0																#This is used to check which individual the roulette has landed on
+			particle_index = 0																#Initiate individual index count (used to add individual to survivor list)
+			for particle_probability in p_lin_rank:											#Loop for each individual
+				p_cumulative = p_cumulative + particle_probability								#Update p_cumulative when checking each individual
+				if p_cumulative >= roulette:													#Individual is selected when p_cumulative exceeds roulette value
+					pop_selection.append(sorted_pop[particle_index])
+					fitness_selection.append(sorted_fitness[particle_index])
+					break																		#Break for-loop when selection is made
+				particle_index = particle_index + 1											#Update particle index counter
+		
+		self.population = pop_selection													#Update selected parents/survivors into class attribute
+		self.pop_fitness = fitness_selection
+	
 	def pop_replicate_repeats(self):
 		pop_size = len(self.population)
 		for x in range(pop_size, self.pop_size):
@@ -71,7 +143,7 @@ class population:
 		self.print_logs()
 		
 		for x in range(self.max_gen):
-			self.select_rank(self.k)
+			self.select_rank_roulette_exponential(self.k)
 			self.pop_replicate_repeats()
 			self.pop_mutate()
 			self.calc_fitness_pop()
