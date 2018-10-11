@@ -59,13 +59,17 @@ public class player63 implements ContestSubmission
 	{
         int evals = 0;
 
-        int n_islands = 3;
-        int n_agents = 100;
-        int n_parents = 20;
-        int n_children = 20;
-        double fitnessSharing = 3;
-        int n_migrants = 5;
+        int n_islands = 2;
+        int n_agents = 200;
+        int n_parents = 100;
+        int n_children = 100;
+        double fitnessSharing = 0;
+        int n_migrants = 10;
         int epoch = 100;
+
+        Agent.mutationProb_ = 0.1;
+        Agent.mutationStepSize_ = 1 / Math.sqrt(2 * Math.sqrt(n_agents));
+        Agent.mutationStepSizePrime_ = 1 / Math.sqrt(2 * n_agents);
 
         // Initialize population.
         // out.println("\nInitialize the population");
@@ -85,13 +89,17 @@ public class player63 implements ContestSubmission
             // Check fitness of unknown function.
             evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
-            if (generations % epoch == 0)
-            {
-                islands_.migrate(n_migrants);
-            }
+            islands_.printIslandStats(true, true);
 
-            // out.println(Double.toString(population_.getAverageFitness()));
-            generations++;
+            if (n_islands > 0)
+            {
+                if (generations % epoch == 0)
+                {
+                    islands_.migrate(n_migrants);
+                }
+
+                generations++;
+            }
         }
 	}
 }

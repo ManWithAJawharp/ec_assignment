@@ -38,6 +38,20 @@ public class SurvivorSelection
         return agentsList.toArray(survivors);
     }
 
+    public static Agent[] truncation(int k, Agent[] agents)
+    {
+        Agent[] survivors = new Agent[k];
+
+        Population.sortAgents(agents);
+
+        for (int i = 0; i < k; i++)
+        {
+            survivors[i] = agents[i];
+        }
+
+        return survivors;
+    }
+
     public static Agent[] roundRobin()
     {
         // Blah

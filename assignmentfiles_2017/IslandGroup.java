@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.Collections;
 import java.util.ArrayList;
 
+import java.lang.StringBuilder;
 import static java.lang.System.out;
 
 public class IslandGroup
@@ -84,5 +85,37 @@ public class IslandGroup
         {
             islands_[i].immigrate(migrants[indices.get(i)]);
         }
+    }
+
+    public void printIslandStats(boolean islandBest, boolean islandAvg)
+    {
+        double topBest = 0;
+        double topAverage = 0;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Population island : islands_)
+        {
+            double best = island.getBestFitness();
+            double average = island.getAverageFitness();
+
+            if (best > topBest)
+            {
+                topBest = best;
+            }
+
+            if (average > topAverage)
+            {
+                topAverage = average;
+            }
+        }
+
+        sb.append("best_fitness: ");
+        sb.append(topBest);
+        sb.append("\n");
+        sb.append("average_fitness: ");
+        sb.append(topAverage);
+
+        out.println(sb);
     }
 }

@@ -64,7 +64,7 @@ public class Population
     public void selectParents(int k_selection)
     {
         // return ParentSelection.selectKBest(k_selection, agents_);
-        parents_ =  ParentSelection.tournament(k_selection, 5, agents_);
+        parents_ =  ParentSelection.tournament(k_selection, 20, agents_);
     }
 
     public void selectParents()
@@ -131,26 +131,6 @@ public class Population
         agents_ = newPop;
     }
 
-    private int[] randomSelection(Agent[] set, int k)
-    {
-        ArrayList<Integer> indices = new ArrayList<Integer>();
-
-        for (int i = 0; i < set.length; i++)
-        {
-            indices.add(i);
-        }
-
-        Collections.shuffle(indices);
-
-        int[] array = new int[k];
-        for (int i = 0; i < k; i++)
-        {
-            array[i] = indices.get(i);
-        }
-
-        return array;
-    }
-
     // Make random pairs of selected parents to perform crossover.
     public void createOffspring(int k_children)
     {
@@ -181,23 +161,6 @@ public class Population
         {
             offspring_[i].mutate();
         }
-    }
-
-    private Agent[] crossover(Agent first, Agent second)
-    {
-        double[][] genotypes = Crossover.average(first.getGenotype(),
-                second.getGenotype());
-
-        // FGenerate new fenotypes.
-        Agent[] children = new Agent[genotypes.length];
-
-        // Create new agents from generated fenotypes.
-        for (int i = 0; i < genotypes.length; i++)
-        {
-            children[i] = new Agent(rand_, genotypes[i]);
-        }
-
-        return children;
     }
 
     public void createOffspring()
@@ -250,37 +213,34 @@ public class Population
         agents_ = joinGroups(parents_, offspring_);
     }
 
-    public int getPopulationSize()
-    {
-        return agents_.length;
-    }
-
-    public double[] getBestGenotype()
-    {
-        sortAgents(agents_);
-
-        Agent bestAgent = agents_[agents_.length - 1]; 
-
-        return bestAgent.getGenotype();
-    }
-
+    // Returns the highest fitness in this population.
     public double getBestFitness()
     {
-        sortAgents(agents_);
+        double bestFitness = 0;
 
-        Agent bestAgent = agents_[agents_.length - 1];
-
-        double fitness;
-
-        try
+        for (Agent agent : agents_)
         {
-            return bestAgent.getFitness();
-        } catch (FitnessNotComputedException e)
-        {
-            return 0;
+            double fitness;
+
+            try
+            {
+                fitness = agent.getFitness();
+            }
+            catch (FitnessNotComputedException e)
+            {
+                fitness = 0;
+            }
+
+            if (fitness > bestFitness)
+            {
+                bestFitness = fitness;
+            }
         }
+        
+        return bestFitness;
     }
 
+    // Returns the average fitness of all agents in this population.
     public double getAverageFitness()
     {
         double fitness = 0;
@@ -289,14 +249,15 @@ public class Population
         {
             try
             {
-            fitness += agent.getFitness() / agents_.length;
-            } catch (FitnessNotComputedException e)
+                fitness += agent.getFitness();
+            }
+            catch (FitnessNotComputedException e)
             {
                 continue;
             }
         }
 
-        return fitness;
+        return fitness / agents_.length;
     }
 
     public Agent[] getAgents()
@@ -307,6 +268,23 @@ public class Population
     public static void sortAgents(Agent[] agents)
     {
         Arrays.sort(agents, 0, agents.length);
+    }
+
+    private Agent[] crossover(Agent first, Agent second)
+    {
+        double[][] genotypes = Crossover.randomlyWeightedAvg(first.getGenotype(),
+                second.getGenotype());
+
+        // Generate new fenotypes.
+        Agent[] children = new Agent[genotypes.length];
+
+        // Create new agents from generated fenotypes.
+        for (int i = 0; i < genotypes.length; i++)
+        {
+            children[i] = new Agent(rand_, genotypes[i]);
+        }
+
+        return children;
     }
 
     // Decrease an agent's fitness based on its distance to other agents.
@@ -323,7 +301,8 @@ public class Population
             }
             else
             {
-                shareSum += shareFactor(genotypeDistance(agent, other), shareRadius);    
+                // TODO: Try different distance metrics.
+                shareSum += shareFactor(fenotypeDistance(agent, other), shareRadius);    
             }
         }
 
@@ -348,6 +327,20 @@ public class Population
         for (int i = 0; i < genotype1.length; i++)
         {
             distance += Math.pow(genotype1[i] - genotype2[i], 2);
+        }
+
+        return Math.sqrt(distance);
+    }
+    
+    private double fenotypeDistance(Agent agent1, Agent agent2)
+    {
+        double[] fenotype1 = agent1.getFenotype();
+        double[] fenotype2 = agent2.getFenotype();
+
+        double distance = 0;
+        for (int i = 0; i < fenotype1.length; i++)
+        {
+            distance += Math.pow(fenotype1[i] - fenotype2[i], 2);
         }
 
         return Math.sqrt(distance);
@@ -383,5 +376,26 @@ public class Population
         }
 
         return allAgents;
+    }
+
+    //  Generate an integer array with k random indices.
+    private int[] randomSelection(Agent[] set, int k)
+    {
+        ArrayList<Integer> indices = new ArrayList<Integer>();
+
+        for (int i = 0; i < set.length; i++)
+        {
+            indices.add(i);
+        }
+
+        Collections.shuffle(indices);
+
+        int[] array = new int[k];
+        for (int i = 0; i < k; i++)
+        {
+            array[i] = indices.get(i);
+        }
+
+        return array;
     }
 }

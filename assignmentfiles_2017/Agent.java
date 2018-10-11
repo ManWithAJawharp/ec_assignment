@@ -24,9 +24,9 @@ public class Agent implements Comparable<Agent>
 
     private Random rand_;
 
-	private double mutationProb_ = 0.01;
-    private double mutationStepSize_ = 0.1;
-    private double mutationStepSizePrime_ = 0.1;
+	public static double mutationProb_ = 0.01;
+    public static double mutationStepSize_ = 0.1;
+    public static double mutationStepSizePrime_ = 0.1;
 
 	public Agent(Random rand)
 	{
