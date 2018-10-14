@@ -2,31 +2,32 @@ import random
 from statistics import mean
 from math import sin, cos, tan, exp
 
+
 class population:
-	def __init__(self):
-		self.population = []
-		self.pop_size = 100
-		self.pop_fitness = []
-		
-		self.max_gen = 5000
-		self.current_gen = 0
-		self.k = 30
-		self.s = 2
-		self.p_mutate = 0.2
-		self.i_mutate = 0.1
-	
-	def print_logs(self):
-		print("Generation %s" % (self.current_gen,))
+    def __init__(self):
+        self.population = []
+        self.pop_size = 100
+        self.pop_fitness = []
+
+        self.max_gen = 5000
+        self.current_gen = 0
+        self.k = 30
+        self.s = 2
+        self.p_mutate = 0.2
+        self.i_mutate = 0.1
+
+    def print_logs(self):
+        print("Generation %s" % (self.current_gen,))
 		#print("Population Size: %f" % len(self.population))
-		print("Max Fitness: %f" % max(self.pop_fitness))
-		print("Mean Fitness: %f" % mean(self.pop_fitness))
-		print("X: %f  Y: %f" % (self.population[0][0], self.population[0][1]))
-		print("\n")
+        print("Max Fitness: %f" % max(self.pop_fitness))
+        print("Mean Fitness: %f" % mean(self.pop_fitness))
+        print("X: %f  Y: %f" % (self.population[0][0], self.population[0][1]))
+        print("\n")
 	
-	def new_population_random(self):
-		self.population = []
-		for x in range(self.pop_size):
-			self.population.append((random.uniform(-100, 100),random.uniform(-100, 100)))
+    def new_population_random(self):
+        self.population = []
+        for x in range(self.pop_size):
+            self.population.append((random.uniform(-100, 100),random.uniform(-100, 100)))
 	
 	def calc_fitness_pop(self):
 		self.pop_fitness = []
@@ -71,10 +72,22 @@ class population:
 		self.population = pop_selection										#Update selected parents/survivors into class attribute
 		self.pop_fitness = fitness_selection
 	
-	def select_rank_roulette_linear(self, k, s):							#Rank Based Selection: Linear Ranking, selects k partents/survivors with parameter 1 <= s <= 2
-		sorted_fitness, sorted_pop = self.sort_pop()							#Sort population by fitness
-		pop_rank = list(reversed(range(self.pop_size)))							#Create rank list corresponding to a sorted population
-		p_lin_rank = [((2-s)/self.pop_size)+(2*rank*(s-1)/(self.pop_size*(self.pop_size-1))) for rank in pop_rank]	#Calculate weights for each individual according to Linear Ranking forumula
+    def select_rank_roulette_linear(self, k, s):
+        """
+        Rank Based Selection: Linear Ranking, selects k partents/survivors with parameter 1 <= s <= 2
+        """
+        #Sort population by fitness
+		sorted_fitness, sorted_pop = self.sort_pop()
+
+        #Create rank list corresponding to a sorted population
+        pop_rank = list(reversed(range(self.pop_size)))	
+
+        #Calculate weights for each individual according to Linear Ranking forumula
+        p_lin_rank = [
+            ((2-s) / self.pop_size)+(2*rank*(s-1) / (self.pop_size*(self.pop_size-1)))
+            for rank in pop_rank
+        ]	
+
 		p_lin_rank = [p/sum(p_lin_rank) for p in p_lin_rank]					#Normalise weight values in order to be used as probability values
 		
 		pop_selection = []														#Initiate selected survivor population list
