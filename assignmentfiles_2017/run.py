@@ -12,6 +12,27 @@ EVALUATIONS = [
     "KatsuuraEvaluation"
 ]
 
+DEFAULT_PARAMS = {
+    # Number of islands.
+    'islands': 2,
+    # Number of migrants per island per migration.
+    'migrants': 5,
+    # Number of generations before a migration occurs.
+    'epoch': 100,
+
+    # Number of agents per island.
+    'agents': 100,
+    # Number of parents selected per generation.
+    'parents': 50,
+    # Number of children generated per generation.
+    'children': 50,
+
+    # Radius within which fitness sharing is active.
+    'fitnessSharing': 0.0,
+    # Selection pressure for linear ranking.
+    'expectedOffspring': 2.0,
+}
+
 
 def run_function(evaluation, iterations=1, arguments={}):
     """
@@ -24,6 +45,8 @@ def run_function(evaluation, iterations=1, arguments={}):
         The evaluation function to use.
     iterations : int, optional
         The number of times to run the algorithm.
+    arguments : dict
+        Dictionary of arguments to pass to the program.
     """
     print(f"Running function {evaluation}")
     scores = []
@@ -66,6 +89,11 @@ def run_function(evaluation, iterations=1, arguments={}):
 
 
 def parse_output(stdout):
+    """
+    Parse the program's output into a dictionary. Each unique variable
+    is assigned a list that contains all its values in the order they
+    where printed.
+    """
     output = stdout.strip().split('\n')
 
     variables = {}
@@ -87,6 +115,7 @@ def parse_output(stdout):
 
 
 def main():
+    # Parse the arguments.
     parser = argparse.ArgumentParser()
     parser.add_argument('--iterations', '-i', default=10,
                         help="Number of times to run each function.", type=int)
@@ -95,6 +124,7 @@ def main():
                               " functions will be run."))
     args = parser.parse_args()
 
+    # Set the evaluation functions to run.
     evaluations = EVALUATIONS
 
     if args.evaluation is not None:
@@ -106,11 +136,18 @@ def main():
 
     print(f"Running functions for {args.iterations} iterations.")
 
+    # Run the selected evaluation functions a number of times and
+    # report the outcomes.
+    # TODO: Read parameter arguments from file or something.
+    arguments = DEFAULT_PARAMS
+
     for idx, evaluation in enumerate(evaluations):
         scores, best_fitness, average_fitness = \
-                run_function(evaluation, args.iterations)
+                run_function(evaluation, args.iterations, arguments)
 
         plt.figure()
+        # If the functions is run only once, only plot the run's
+        # performance.
         if args.iterations is 1:
             plt.title("Performance")
             plt.plot(best_fitness[0], label="Best fitness")
@@ -119,6 +156,8 @@ def main():
             plt.ylabel("Fitness")
             plt.legend()
         else:
+            # Otherwise, also plot the distribution over the collected
+            # scores as a histogram.
             plt.subplot(121)
             plt.title("Performance of first run")
             plt.plot(best_fitness[0], label="Best fitness")
