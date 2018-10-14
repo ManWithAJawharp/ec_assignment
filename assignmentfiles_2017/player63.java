@@ -26,6 +26,7 @@ public class player63 implements ContestSubmission
     private int n_parents;
 
     private double fitnessSharing; // Fitness sharing radius.
+    private double expectedOffspring; // Linear ranking parameter.
 
 	public player63()
 	{
@@ -37,10 +38,9 @@ public class player63 implements ContestSubmission
 		// Set seed of algortihms random process
 		rnd_.setSeed(seed);
 
-        ParentSelection.setSeed(seed + 1);
-        Mutation.setSeed(seed + 2);
-        Crossover.setSeed(seed + 3);
-        SurvivorSelection.setSeed(seed + 4);
+        Mutation.setSeed(seed + 1);
+        Crossover.setSeed(seed + 2);
+        Selection.setSeed(seed + 3);
 	}
 
 	public void setEvaluation(ContestEvaluation evaluation)
@@ -75,6 +75,7 @@ public class player63 implements ContestSubmission
         n_parents = Integer.parseInt(System.getProperty("parents", "50"));
 
         fitnessSharing = Double.parseDouble(System.getProperty("fitnessSharing", "0"));
+        expectedOffspring = Double.parseDouble(System.getProperty("expectedOffspring", "2"));
     }
     
 	public void run()
@@ -87,7 +88,7 @@ public class player63 implements ContestSubmission
 
         // Initialize population.
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
-                fitnessSharing, rnd_);
+                fitnessSharing, expectedOffspring, rnd_);
         evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
         int generations = 0;
