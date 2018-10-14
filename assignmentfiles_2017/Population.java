@@ -201,7 +201,14 @@ public class Population
 
     public int evaluate(ContestEvaluation evaluation, int evals, int evaluationLimit)
     {
-        return evaluate(evaluation, evals, evaluationLimit, offspring_);
+        try
+        {
+            return evaluate(evaluation, evals, evaluationLimit, offspring_);
+        }
+        catch (NullPointerException e)
+        {
+            return evaluate(evaluation, evals, evaluationLimit, agents_);
+        }
     }
 
     // Kill a subset of the population to get it back to the original number.

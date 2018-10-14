@@ -16,6 +16,17 @@ public class player63 implements ContestSubmission
     private Population population_;
     private IslandGroup islands_;
 
+    // Algorithm parameters.
+    private int n_islands;
+    private int n_migrants;
+    private int epoch_length; // Number of generations before migrating.
+
+    private int n_agents;
+    private int n_children;
+    private int n_parents;
+
+    private double fitnessSharing; // Fitness sharing radius.
+
 	public player63()
 	{
 		rnd_ = new Random();
@@ -41,8 +52,8 @@ public class player63 implements ContestSubmission
 		Properties props = evaluation.getProperties();
         // Get evaluation limit
         evaluations_limit_ = Integer.parseInt(props.getProperty("Evaluations"));
+
 		// Property keys depend on specific evaluation
-		// E.g. double param = Double.parseDouble(props.getProperty("property_name"));
         boolean isMultimodal = Boolean.parseBoolean(props.getProperty("Multimodal"));
         boolean hasStructure = Boolean.parseBoolean(props.getProperty("Regular"));
         boolean isSeparable = Boolean.parseBoolean(props.getProperty("Separable"));
@@ -53,36 +64,35 @@ public class player63 implements ContestSubmission
         }else{
             // Do sth else
         }
+
+        // Get custom algorithm properties.
+        n_islands = Integer.parseInt(System.getProperty("islands", "2"));
+        n_migrants = Integer.parseInt(System.getProperty("migrants", "5"));
+        epoch_length = Integer.parseInt(System.getProperty("epoch", "100"));
+        
+        n_agents = Integer.parseInt(System.getProperty("agents", "100"));
+        n_children = Integer.parseInt(System.getProperty("children", "50"));
+        n_parents = Integer.parseInt(System.getProperty("parents", "50"));
+
+        fitnessSharing = Double.parseDouble(System.getProperty("fitnessSharing", "0"));
     }
     
 	public void run()
 	{
         int evals = 0;
 
-        int n_islands = 2;
-        int n_agents = 200;
-        int n_parents = 100;
-        int n_children = 100;
-        double fitnessSharing = 0;
-        int n_migrants = 10;
-        int epoch = 100;
-
         Agent.mutationProb_ = 0.1;
         Agent.mutationStepSize_ = 1 / Math.sqrt(2 * Math.sqrt(n_agents));
         Agent.mutationStepSizePrime_ = 1 / Math.sqrt(2 * n_agents);
 
         // Initialize population.
-        // out.println("\nInitialize the population");
-        // out.println(evaluation_);
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
                 fitnessSharing, rnd_);
+        evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
         int generations = 0;
 
-        // out.println("Run evolution");
-
-        // Calculate fitness
-        while(evals < evaluations_limit_)
+        while (evals < evaluations_limit_)
         {
             islands_.step();
 
@@ -93,7 +103,7 @@ public class player63 implements ContestSubmission
 
             if (n_islands > 0)
             {
-                if (generations % epoch == 0)
+                if (generations % epoch_length == 0)
                 {
                     islands_.migrate(n_migrants);
                 }
