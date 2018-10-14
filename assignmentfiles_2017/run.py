@@ -13,7 +13,7 @@ EVALUATIONS = [
 ]
 
 
-def run_function(evaluation, iterations=1):
+def run_function(evaluation, iterations=1, arguments={}):
     """
     Run the algorithm on the given evaluation function for a number of
     iterations.
@@ -30,6 +30,8 @@ def run_function(evaluation, iterations=1):
     best_fitness = []
     average_fitness = []
 
+    arguments = [f"-D{key}={value}" for key, value in arguments.items()]
+
     try:
         start_time = time.time()
 
@@ -38,8 +40,10 @@ def run_function(evaluation, iterations=1):
 
             # Run the program with given arguments.
             process = run(
-                ["java", "-jar", "testrun.jar", "-submission=player63",
-                 f"-evaluation={evaluation}", f"-seed={seed}"],
+                ["java"]
+                + arguments
+                + ["-jar", "testrun.jar", "-submission=player63",
+                   f"-evaluation={evaluation}", f"-seed={seed}"],
                 capture_output=True, text=True)
 
             variables = parse_output(process.stdout)
@@ -108,15 +112,26 @@ def main():
 
         plt.figure()
         if args.iterations is 1:
-            plt.plot(best_fitness[0])
-            plt.plot(average_fitness[0])
+            plt.title("Performance")
+            plt.plot(best_fitness[0], label="Best fitness")
+            plt.plot(average_fitness[0], label="Average fitness")
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.legend()
         else:
             plt.subplot(121)
-            plt.plot(best_fitness[0])
-            plt.plot(average_fitness[0])
+            plt.title("Performance of first run")
+            plt.plot(best_fitness[0], label="Best fitness")
+            plt.plot(average_fitness[0], label="Average fitness")
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.legend()
 
             plt.subplot(122)
-            plt.hist(scores)
+            plt.title("Distribution over scores")
+            plt.hist(scores, density=True)
+            plt.xlabel("Score")
+            plt.ylabel("Density")
 
         plt.show()
 
