@@ -20,9 +20,10 @@ public class Population
     private int offspringSize_;
 
     private double shareRadius_;
+    private double expectedOffspring_;
 
     public Population(int n_agents, int n_parents, int n_children,
-            double shareRadius, Random rand)
+            double shareRadius, double expectedOffspring, Random rand)
     {
         rand_ = rand;
 
@@ -38,6 +39,7 @@ public class Population
         offspringSize_ = n_children;
 
         shareRadius_ = shareRadius;
+        expectedOffspring_ = expectedOffspring;
     }
 
     // Randomly assign low fitness values to all agents.
@@ -63,8 +65,8 @@ public class Population
     // Select the k fittest parents.
     public void selectParents(int k_selection)
     {
-        // return ParentSelection.selectKBest(k_selection, agents_);
-        parents_ =  ParentSelection.tournament(k_selection, 20, agents_);
+        // return Selection.selectKBest(k_selection, agents_);
+        parents_ =  Selection.tournament(k_selection, 20, agents_);
     }
 
     public void selectParents()
@@ -207,8 +209,12 @@ public class Population
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
-        parents_ = SurvivorSelection.tournament(
-                populationSize_ - offspring_.length, 5, agents_);
+        //parents_ = Selection.tournament(
+        //        populationSize_ - offspring_.length, 5, agents_);
+        //parents_ = Selection.truncation(
+        //        populationSize_ - offspring_.length, agents_);
+        parents_ = Selection.linearRanking(
+                populationSize_ - offspring_.length, expectedOffspring_, agents_);
 
         agents_ = joinGroups(parents_, offspring_);
     }

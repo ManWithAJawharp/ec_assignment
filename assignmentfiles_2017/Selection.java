@@ -3,9 +3,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static java.lang.System.out;
-
-public class SurvivorSelection
+public final class Selection
 {
     private static Random rand_ = new Random();
 
@@ -14,17 +12,23 @@ public class SurvivorSelection
         rand_.setSeed(seed);
     }
 
+    public static Agent[] truncation(int k, Agent[] agents)
+    {
+        Population.sortAgents(agents);
+
+        return Arrays.copyOfRange(agents, agents.length - k, agents.length);
+    }
+
     public static Agent[] tournament(int k, int tournamentSize, Agent[] agents)
     {
         Agent[] survivors = new Agent[k];
 
-        // Copy agents array to an ArrayList for shuffling.
         ArrayList<Agent> agentsList = new ArrayList<>(Arrays.asList(agents));
 
-        for (int i = 0; i < agents.length - k; i++)
+        for (int i = 0; i < k; i++)
         {
             Collections.shuffle(agentsList);
-            
+
             Agent[] subset = new Agent[tournamentSize];
             for (int j = 0; j < tournamentSize; j++)
             {
@@ -32,33 +36,35 @@ public class SurvivorSelection
             }
 
             Population.sortAgents(subset);
-            agentsList.remove(subset[0]);
-        }
 
-        return agentsList.toArray(survivors);
-    }
-
-    public static Agent[] truncation(int k, Agent[] agents)
-    {
-        Agent[] survivors = new Agent[k];
-
-        Population.sortAgents(agents);
-
-        for (int i = 0; i < k; i++)
-        {
-            survivors[i] = agents[agents.length - i - 1];
+            survivors[i] = agentsList.get(agentsList.size() - 1);
+            agentsList.remove(agentsList.size() - 1);
         }
 
         return survivors;
     }
 
-    public static Agent[] roundRobin()
+    public static Agent[] linearRanking(int k, double s, Agent[] agents)
     {
-        // Blah
-        return new Agent[50];
+        int populationSize = agents.length;
+        double[] selectionProbabilities = new double[populationSize];
+
+        Population.sortAgents(agents);
+
+        double intercept = (2 - s) / populationSize;
+
+        for (int i = 0; i < populationSize; i++)
+        {
+            selectionProbabilities[i] = intercept + 2* i * (s -1)
+                / (populationSize * (populationSize - 1));
+        }
+
+        Agent[] survivors = roulette(k, selectionProbabilities, agents);
+
+        return survivors;
     }
 
-    public static Agent[] roulette(Agent[] agents, double[] probabilities, int k)
+    public static Agent[] roulette(int k, double[] probabilities, Agent[] agents)
     {
         Agent[] selection = new Agent[k];
 
@@ -80,25 +86,5 @@ public class SurvivorSelection
         }
 
         return selection;
-    }
-
-    public static Agent[] linearRanking(int k, double s, Agent[] agents)
-    {
-        int populationSize = agents.length;
-        double[] selectionProbabilities = new double[populationSize];
-
-        Population.sortAgents(agents);
-
-        double intercept = (2 - s) / populationSize;
-
-        for (int i = 0; i < populationSize; i++)
-        {
-            selectionProbabilities[i] = intercept + 2 * i * (s - 1)
-                / (populationSize * (populationSize - 1));
-        }
-
-        Agent[] survivors = roulette(agents, selectionProbabilities, k);
-
-        return survivors;
     }
 }

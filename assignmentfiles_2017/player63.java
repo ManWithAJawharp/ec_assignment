@@ -64,6 +64,7 @@ public class player63 implements ContestSubmission
         int n_parents = 100;
         int n_children = 100;
         double fitnessSharing = 0;
+        double expectedOffspring = 1.5;
         int n_migrants = 10;
         int epoch = 100;
 
@@ -75,7 +76,7 @@ public class player63 implements ContestSubmission
         // out.println("\nInitialize the population");
         // out.println(evaluation_);
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
-                fitnessSharing, rnd_);
+                fitnessSharing, expectedOffspring, rnd_);
 
         int generations = 0;
 
