@@ -123,7 +123,7 @@ public final class Selection
             selection[i] = results[results.length - i - 1].getAgent();
         }
 
-        return new Agent[0];
+        return selection;
     }
 
     private static Agent[] roulette(int k, double[] probabilities, Agent[] agents)

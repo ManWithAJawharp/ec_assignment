@@ -18,11 +18,12 @@ public class Population
     private int populationSize_;
     private int parentsSize_;
     private int offspringSize_;
+    private int tournamentSize_;
 
     private double shareRadius_;
     private double expectedOffspring_;
 
-    public Population(int n_agents, int n_parents, int n_children,
+    public Population(int n_agents, int n_parents, int n_children, int tournamentSize,
             double shareRadius, double expectedOffspring, Random rand)
     {
         rand_ = rand;
@@ -37,6 +38,7 @@ public class Population
         populationSize_ = n_agents;
         parentsSize_ = n_parents;
         offspringSize_ = n_children;
+        tournamentSize_ = tournamentSize;
 
         shareRadius_ = shareRadius;
         expectedOffspring_ = expectedOffspring;
@@ -217,13 +219,13 @@ public class Population
     public void trimPopulation()
     {
         //parents_ = Selection.tournament(
-        //        populationSize_ - offspring_.length, 5, agents_);
+        //        populationSize_ - offspring_.length, tournamentSize_, agents_);
         //parents_ = Selection.truncation(
         //        populationSize_ - offspring_.length, agents_);
         // parents_ = Selection.linearRanking(
         //        populationSize_ - offspring_.length, expectedOffspring_, agents_);
         parents_ = Selection.roundRobin(
-                populationSize_ - offspring_.length, 5, agents_);
+                populationSize_ - offspring_.length, tournamentSize_, agents_);
 
         agents_ = joinGroups(parents_, offspring_);
     }
