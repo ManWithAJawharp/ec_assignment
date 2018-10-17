@@ -47,19 +47,19 @@ class population:
 		self.population = sorted_pop[0:k]
 		self.pop_fitness = sorted_fitness[0:k]
 	
-	def select_round_robin_tournament(self, k, q):							#Round-Robin Tournament Selection, scores each player against q opponents, selects k parents/survivors
-		sorted_fitness, sorted_pop = self.sort_pop()							#Sort population by fitness
-		scores = []																#Initialise Score list
-		for particle in range(0, self.pop_size):								#Score each player in population
-			wins = 0																#Initialise win counter
-			for opponent in range(0, q):											#Score against q opponents
+	def select_round_robin_tournament(self, k, q):			#Round-Robin Tournament Selection, scores each player against q opponents, selects k parents/survivors
+		sorted_fitness, sorted_pop = self.sort_pop()			#Sort population by fitness
+		scores = []							#Initialise Score list
+		for particle in range(0, self.pop_size):			#Score each player in population
+			wins = 0							#Initialise win counter
+			for opponent in range(0, q):					#Score against q opponents
 				if sorted_fitness[random.randint(0, self.pop_size-1)] <= sorted_fitness[particle]:
 					wins = wins + 1														#Increment win score if fitness is higher
 			scores.append(wins)														#Add win score to score list
-		score_sorted_pop = list(reversed([x for _,x in sorted(zip(scores, sorted_pop))]))			#Sort population according to score
-		score_sorted_fitness = list(reversed([x for _,x in sorted(zip(scores, sorted_fitness))]))	#Sort fitness list according to score
-		self.population = score_sorted_pop[0:k]										#Take top k players from population
-		self.pop_fitness = score_sorted_fitness[0:k]								#Update corresponding k fitnesses
+		score_sorted_pop = list(reversed([x for _,x in sorted(zip(scores, sorted_pop))]))	#Sort population according to score
+		score_sorted_fitness = list(reversed([x for _,x in sorted(zip(scores, sorted_fitness))]))#Sort fitness list according to score
+		self.population = score_sorted_pop[0:k]							#Take top k players from population
+		self.pop_fitness = score_sorted_fitness[0:k]						#Update corresponding k fitnesses
 	
 	def select_fitness_roulette(self, k):									#Fitness Proportionate Selection (FPS), selects k parents/survivors
 		sorted_fitness, sorted_pop = self.sort_pop()							#Sort population by fitness
