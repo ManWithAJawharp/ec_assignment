@@ -25,6 +25,7 @@ public class player63 implements ContestSubmission
     private int n_children;
     private int n_parents;
 
+    private double mutationProb;
     private double fitnessSharing; // Fitness sharing radius.
     private double expectedOffspring; // Linear ranking parameter.
 
@@ -74,6 +75,7 @@ public class player63 implements ContestSubmission
         n_children = Integer.parseInt(System.getProperty("children", "50"));
         n_parents = Integer.parseInt(System.getProperty("parents", "50"));
 
+        mutationProb = Double.parseDouble(System.getProperty("mutationProb", "0.1"));
         fitnessSharing = Double.parseDouble(System.getProperty("fitnessSharing", "0"));
         expectedOffspring = Double.parseDouble(System.getProperty("expectedOffspring", "2"));
     }
@@ -82,7 +84,7 @@ public class player63 implements ContestSubmission
 	{
         int evals = 0;
 
-        Agent.mutationProb_ = 0.1;
+        Agent.mutationProb_ = mutationProb;
         Agent.mutationStepSize_ = 1 / Math.sqrt(2 * Math.sqrt(n_agents));
         Agent.mutationStepSizePrime_ = 1 / Math.sqrt(2 * n_agents);
 
