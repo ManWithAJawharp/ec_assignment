@@ -220,8 +220,10 @@ public class Population
         //        populationSize_ - offspring_.length, 5, agents_);
         //parents_ = Selection.truncation(
         //        populationSize_ - offspring_.length, agents_);
-        parents_ = Selection.linearRanking(
-                populationSize_ - offspring_.length, expectedOffspring_, agents_);
+        // parents_ = Selection.linearRanking(
+        //        populationSize_ - offspring_.length, expectedOffspring_, agents_);
+        parents_ = Selection.roundRobin(
+                populationSize_ - offspring_.length, 5, agents_);
 
         agents_ = joinGroups(parents_, offspring_);
     }

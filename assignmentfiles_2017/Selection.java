@@ -5,6 +5,8 @@ import java.util.Collections;
 
 public final class Selection
 {
+    
+
     private static Random rand_ = new Random();
 
     public static void setSeed(long seed)
@@ -68,12 +70,14 @@ public final class Selection
     {
         Population.sortAgents(agents);
         
+        AgentRobin[] results = new AgentRobin[agents.length];
         int[] winnings = new int[agents.length];
 
         // Iterate through all agents and have them compete with random
         // opponents.
         for (int i = 0; i < agents.length; i++)
         {
+            int wins = 0;
             int[] opponentIndices = Population.randomSelection(agents, q);
 
             double agentFitness;
@@ -82,7 +86,7 @@ public final class Selection
                 agentFitness = agents[i].getFitness();
             } catch (FitnessNotComputedException e)
             {
-                winnings[i] = 0;
+                results[i] = new AgentRobin(agents[i], 0);
                 continue;
             }
 
@@ -98,18 +102,28 @@ public final class Selection
                 }
                 catch (FitnessNotComputedException e)
                 {
-                    winnings[i]++;
+                    wins++;
                     continue;
                 }
 
                 if (agentFitness >= opponentFitness)
                 {
-                    winnings[i]++;
+                    wins++;
                 }
             }
+
+            results[i] = new AgentRobin(agents[i], wins);
         }
 
         // Select k agents with most wins.
+        Arrays.sort(results, 0, results.length);
+
+        Agent[] selection = new Agent[k];
+
+        for (int i = 0; i < k; i++)
+        {
+            selection[i] = results[results.length - i - 1].getAgent();
+        }
 
         return new Agent[0];
     }
@@ -138,3 +152,40 @@ public final class Selection
         return selection;
     }
 }
+
+class AgentRobin implements Comparable<AgentRobin>
+    {
+        private Agent agent_;
+        private int wins_;
+        public AgentRobin(Agent agent, int wins)
+        {
+            agent_ = agent;
+            wins_ = wins;
+        }
+
+        public Agent getAgent()
+        {
+            return agent_;
+        }
+
+        public int getWins()
+        {
+            return wins_;
+        }
+
+        public int compareTo(AgentRobin other)
+        {
+            if (wins_ > other.getWins())
+            {
+                return 1;
+            }
+            else if (wins_ < other.getWins())
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
