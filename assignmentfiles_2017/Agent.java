@@ -69,6 +69,7 @@ public class Agent implements Comparable<Agent>
             double[] sigma = Arrays.copyOfRange(genotype_,
                     genotype_.length / 2, genotype_.length);
 
+            genotype_ = Mutation.addGaussian(genotype_,1,0.5);
 			genotype_ = Mutation.adaptiveMutation(x, sigma, mutationStepSizePrime_,
                     mutationStepSize_, 0.001);
 		}

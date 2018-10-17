@@ -14,21 +14,21 @@ EVALUATIONS = [
 
 DEFAULT_PARAMS = {
     # Number of islands.
-    'islands': 2,
+    'islands': 5,
     # Number of migrants per island per migration.
     'migrants': 5,
     # Number of generations before a migration occurs.
-    'epoch': 100,
+    'epoch': 2,
 
     # Number of agents per island.
     'agents': 100,
     # Number of parents selected per generation.
     'parents': 50,
-    # Number of children generated per generation.
+    # Number of cchildren generated per generation.
     'children': 50,
 
     # Probability of mutation.
-    'mutationProb': 0.1,
+    'mutationProb': 1,
     # Radius within which fitness sharing is active.
     'fitnessSharing': 0.0,
     # Selection pressure for linear ranking.
