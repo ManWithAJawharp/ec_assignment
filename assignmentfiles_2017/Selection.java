@@ -64,7 +64,12 @@ public final class Selection
         return survivors;
     }
 
-    public static Agent[] roulette(int k, double[] probabilities, Agent[] agents)
+    public static Agent[] roundRobin()
+    {
+        return new Agent[0];
+    }
+
+    private static Agent[] roulette(int k, double[] probabilities, Agent[] agents)
     {
         Agent[] selection = new Agent[k];
 
