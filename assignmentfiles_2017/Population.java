@@ -392,7 +392,7 @@ public class Population
     }
 
     //  Generate an integer array with k random indices.
-    private int[] randomSelection(Agent[] set, int k)
+    public static int[] randomSelection(Agent[] set, int k)
     {
         ArrayList<Integer> indices = new ArrayList<Integer>();
 

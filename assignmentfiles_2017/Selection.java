@@ -64,8 +64,53 @@ public final class Selection
         return survivors;
     }
 
-    public static Agent[] roundRobin()
+    public static Agent[] roundRobin(int k, int q, Agent[] agents)
     {
+        Population.sortAgents(agents);
+        
+        int[] winnings = new int[agents.length];
+
+        // Iterate through all agents and have them compete with random
+        // opponents.
+        for (int i = 0; i < agents.length; i++)
+        {
+            int[] opponentIndices = Population.randomSelection(agents, q);
+
+            double agentFitness;
+            try
+            {
+                agentFitness = agents[i].getFitness();
+            } catch (FitnessNotComputedException e)
+            {
+                winnings[i] = 0;
+                continue;
+            }
+
+            // Randomly select q opponents for each agent and compete with the
+            // agent.
+            for (int j = 0; j < opponentIndices.length; j++)
+            {
+                double opponentFitness;
+
+                try
+                {
+                    opponentFitness = agents[j].getFitness();
+                }
+                catch (FitnessNotComputedException e)
+                {
+                    winnings[i]++;
+                    continue;
+                }
+
+                if (agentFitness >= opponentFitness)
+                {
+                    winnings[i]++;
+                }
+            }
+        }
+
+        // Select k agents with most wins.
+
         return new Agent[0];
     }
 
