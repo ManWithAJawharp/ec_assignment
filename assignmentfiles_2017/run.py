@@ -27,6 +27,8 @@ DEFAULT_PARAMS = {
     # Number of children generated per generation.
     'children': 50,
 
+    # Probability of mutation.
+    'mutationProb': 0.1,
     # Radius within which fitness sharing is active.
     'fitnessSharing': 0.0,
     # Selection pressure for linear ranking.
@@ -122,6 +124,21 @@ def main():
     parser.add_argument('--evaluation', '-e', default=None,
                         help=("The evaluation function to run. If not set, all"
                               " functions will be run."))
+
+    for key in DEFAULT_PARAMS:
+        value_type = type(DEFAULT_PARAMS[key])
+
+        try:
+            parser.add_argument(
+                f'--{key}', f'-{key[0].upper()}',
+                default=DEFAULT_PARAMS[key], type=value_type,
+                help=f"A parameter of type {value_type}.")
+        except argparse.ArgumentError:
+            parser.add_argument(
+                f'--{key}', f'-{key[0].upper()*2}',
+                default=DEFAULT_PARAMS[key], type=value_type,
+                help=f"A parameter of type {repr(value_type)}.")
+
     args = parser.parse_args()
 
     # Set the evaluation functions to run.
@@ -138,8 +155,12 @@ def main():
 
     # Run the selected evaluation functions a number of times and
     # report the outcomes.
-    # TODO: Read parameter arguments from file or something.
-    arguments = DEFAULT_PARAMS
+    arguments = {}
+    arg_arguments = vars(args)
+    for key in DEFAULT_PARAMS:
+        arguments[key] = arg_arguments[key]
+
+    # arguments = DEFAULT_PARAMS
 
     for idx, evaluation in enumerate(evaluations):
         scores, best_fitness, average_fitness = \
