@@ -15,18 +15,28 @@ public class IslandGroup
 
     public IslandGroup(int n_islands, int n_agents, int n_parents,
             int n_children, int tournamentSize, double shareRadius, double expectedOffspring,
-            Random rand)
+            Random rand, boolean randomSelectionOp)
     {
         rand_ = rand;
 
         islands_ = new Population[n_islands];
 
+        Selection.Operator selectionOp;
+        selectionOp = Selection.Operator.ROUNDROBIN;
+
         for (int i = 0; i < n_islands; i++)
         {
-            Population population =  new Population(n_agents, n_parents,
-                    n_children, tournamentSize, shareRadius, expectedOffspring, rand);
+            if (randomSelectionOp)
+            {
+                // Select an integer from 1 to 3.
+                int selection = rand_.nextInt(3) + 1;
 
-            // TODO: Set operators
+                selectionOp = Selection.Operator.values()[selection];
+            }
+
+            Population population = new Population(n_agents, n_parents,
+                n_children, tournamentSize, shareRadius, expectedOffspring, rand,
+                selectionOp);
 
             population.initFitness();
 
@@ -116,6 +126,8 @@ public class IslandGroup
         sb.append("\n");
         sb.append("average_fitness: ");
         sb.append(topAverage);
+
+        // TODO: print per-island stats
 
         out.println(sb);
     }

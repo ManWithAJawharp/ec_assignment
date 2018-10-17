@@ -5,6 +5,10 @@ import java.util.Collections;
 
 public final class Selection
 {
+    public static enum Operator {
+        TRUNCATION, TOURNAMENT, LINEARRANKING, ROUNDROBIN
+    }
+
     private static Random rand_ = new Random();
 
     public static void setSeed(long seed)

@@ -23,8 +23,11 @@ public class Population
     private double shareRadius_;
     private double expectedOffspring_;
 
+    private Selection.Operator selectionOp_;
+
     public Population(int n_agents, int n_parents, int n_children, int tournamentSize,
-            double shareRadius, double expectedOffspring, Random rand)
+            double shareRadius, double expectedOffspring, Random rand,
+            Selection.Operator selectionOp)
     {
         rand_ = rand;
 
@@ -42,6 +45,8 @@ public class Population
 
         shareRadius_ = shareRadius;
         expectedOffspring_ = expectedOffspring;
+
+        selectionOp_ = selectionOp;
     }
 
     // Randomly assign low fitness values to all agents.
@@ -218,14 +223,24 @@ public class Population
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
-        //parents_ = Selection.tournament(
-        //        populationSize_ - offspring_.length, tournamentSize_, agents_);
-        //parents_ = Selection.truncation(
-        //        populationSize_ - offspring_.length, agents_);
-        // parents_ = Selection.linearRanking(
-        //        populationSize_ - offspring_.length, expectedOffspring_, agents_);
-        parents_ = Selection.roundRobin(
-                populationSize_ - offspring_.length, tournamentSize_, agents_);
+        switch (selectionOp_)
+        {
+            case TOURNAMENT:
+                parents_ = Selection.tournament(
+                    populationSize_ - offspring_.length, tournamentSize_,
+                    agents_);
+                break;
+            case LINEARRANKING:
+                parents_ = Selection.linearRanking(
+                    populationSize_ - offspring_.length, expectedOffspring_,
+                    agents_);
+                break;
+            case ROUNDROBIN:
+                parents_ = Selection.roundRobin(
+                    populationSize_ - offspring_.length, tournamentSize_,
+                    agents_);
+                break;
+        }
 
         agents_ = joinGroups(parents_, offspring_);
     }
