@@ -14,7 +14,7 @@ public class IslandGroup
     private Population[] islands_;
 
     public IslandGroup(int n_islands, int n_agents, int n_parents,
-            int n_children, double shareRadius, double expectedOffspring,
+            int n_children, int tournamentSize, double shareRadius, double expectedOffspring,
             Random rand)
     {
         rand_ = rand;
@@ -24,7 +24,7 @@ public class IslandGroup
         for (int i = 0; i < n_islands; i++)
         {
             Population population =  new Population(n_agents, n_parents,
-                    n_children, shareRadius, expectedOffspring, rand);
+                    n_children, tournamentSize, shareRadius, expectedOffspring, rand);
 
             // TODO: Set operators
 

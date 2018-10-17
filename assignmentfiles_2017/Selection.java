@@ -64,7 +64,69 @@ public final class Selection
         return survivors;
     }
 
-    public static Agent[] roulette(int k, double[] probabilities, Agent[] agents)
+    public static Agent[] roundRobin(int k, int q, Agent[] agents)
+    {
+        Population.sortAgents(agents);
+        
+        AgentRobin[] results = new AgentRobin[agents.length];
+        int[] winnings = new int[agents.length];
+
+        // Iterate through all agents and have them compete with random
+        // opponents.
+        for (int i = 0; i < agents.length; i++)
+        {
+            int wins = 0;
+            int[] opponentIndices = Population.randomSelection(agents, q);
+
+            double agentFitness;
+            try
+            {
+                agentFitness = agents[i].getFitness();
+            } catch (FitnessNotComputedException e)
+            {
+                results[i] = new AgentRobin(agents[i], 0);
+                continue;
+            }
+
+            // Randomly select q opponents for each agent and compete with the
+            // agent.
+            for (int j = 0; j < opponentIndices.length; j++)
+            {
+                double opponentFitness;
+
+                try
+                {
+                    opponentFitness = agents[j].getFitness();
+                }
+                catch (FitnessNotComputedException e)
+                {
+                    wins++;
+                    continue;
+                }
+
+                if (agentFitness >= opponentFitness)
+                {
+                    wins++;
+                }
+            }
+
+            results[i] = new AgentRobin(agents[i], wins);
+        }
+
+        // Select k agents with most wins.
+        Arrays.sort(results, 0, results.length);
+
+        Agent[] selection = new Agent[k];
+
+        for (int i = 0; i < k; i++)
+        {
+            selection[i] = results[results.length - i - 1].getAgent();
+        }
+
+        return selection;
+    }
+
+    private static Agent[] roulette(int k, double[] probabilities, Agent[] agents)
     {
         Agent[] selection = new Agent[k];
 

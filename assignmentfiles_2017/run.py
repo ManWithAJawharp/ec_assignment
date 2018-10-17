@@ -26,6 +26,8 @@ DEFAULT_PARAMS = {
     'parents': 50,
     # Number of children generated per generation.
     'children': 50,
+    # Number of agents selected for a selection tournament.
+    'tournamentSize': 20,
 
     # Probability of mutation.
     'mutationProb': 0.1,

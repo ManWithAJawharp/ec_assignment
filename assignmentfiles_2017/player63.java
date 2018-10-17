@@ -24,6 +24,7 @@ public class player63 implements ContestSubmission
     private int n_agents;
     private int n_children;
     private int n_parents;
+    private int tournamentSize;
 
     private double mutationProb;
     private double fitnessSharing; // Fitness sharing radius.
@@ -74,6 +75,7 @@ public class player63 implements ContestSubmission
         n_agents = Integer.parseInt(System.getProperty("agents", "100"));
         n_children = Integer.parseInt(System.getProperty("children", "50"));
         n_parents = Integer.parseInt(System.getProperty("parents", "50"));
+        tournamentSize = Integer.parseInt(System.getProperty("tournamentSize", "20"));
 
         mutationProb = Double.parseDouble(System.getProperty("mutationProb", "0.1"));
         fitnessSharing = Double.parseDouble(System.getProperty("fitnessSharing", "0"));
@@ -89,7 +91,7 @@ public class player63 implements ContestSubmission
         Agent.mutationStepSizePrime_ = 1 / Math.sqrt(2 * n_agents);
 
         // Initialize population.
-        islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children,
+        islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children, tournamentSize,
                 fitnessSharing, expectedOffspring, rnd_);
         evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
