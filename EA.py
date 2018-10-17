@@ -54,8 +54,8 @@ class population:
 			wins = 0							#Initialise win counter
 			for opponent in range(0, q):					#Score against q opponents
 				if sorted_fitness[random.randint(0, self.pop_size-1)] <= sorted_fitness[particle]:
-					wins = wins + 1														#Increment win score if fitness is higher
-			scores.append(wins)														#Add win score to score list
+					wins = wins + 1						#Increment win score if fitness is higher
+			scores.append(wins)							#Add win score to score list
 		score_sorted_pop = list(reversed([x for _,x in sorted(zip(scores, sorted_pop))]))	#Sort population according to score
 		score_sorted_fitness = list(reversed([x for _,x in sorted(zip(scores, sorted_fitness))]))#Sort fitness list according to score
 		self.population = score_sorted_pop[0:k]							#Take top k players from population
