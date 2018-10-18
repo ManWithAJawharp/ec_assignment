@@ -70,7 +70,7 @@ public class Agent implements Comparable<Agent>
                     genotype_.length / 2, genotype_.length);
 
 			genotype_ = Mutation.adaptiveMutation(x, sigma, mutationStepSizePrime_,
-                    mutationStepSize_, 0.001);
+                    mutationStepSize_, 0.0000001);
 		}
 	}
 

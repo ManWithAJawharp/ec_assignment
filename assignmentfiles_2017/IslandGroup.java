@@ -105,10 +105,13 @@ public class IslandGroup
 
         StringBuilder sb = new StringBuilder();
 
-        for (Population island : islands_)
+        double[] bestFitnesses = new double[islands_.length];
+        double[] avgFitnesses = new double[islands_.length];
+
+        for (int i = 0; i < islands_.length; i++)
         {
-            double best = island.getBestFitness();
-            double average = island.getAverageFitness();
+            double best = islands_[i].getBestFitness();
+            double average = islands_[i].getAverageFitness();
 
             if (best > topBest)
             {
@@ -119,6 +122,14 @@ public class IslandGroup
             {
                 topAverage = average;
             }
+
+            bestFitnesses[i] = best;
+
+            if (average < 0)
+            {
+                average = 0;
+            }
+            avgFitnesses[i] = average;
         }
 
         sb.append("best_fitness: ");
@@ -126,8 +137,25 @@ public class IslandGroup
         sb.append("\n");
         sb.append("average_fitness: ");
         sb.append(topAverage);
+        sb.append("\n");
 
-        // TODO: print per-island stats
+        for (int i = 0; i < islands_.length; i++)
+        {
+            sb.append("best_fitness_");
+            sb.append(i);
+            sb.append(": ");
+            sb.append(bestFitnesses[i]);
+            sb.append("\n");
+            sb.append("average_fitness_");
+            sb.append(i);
+            sb.append(": ");
+            sb.append(avgFitnesses[i]);
+            
+            if (i < islands_.length - 1)
+            {
+                sb.append("\n");
+            }
+        }
 
         out.println(sb);
     }

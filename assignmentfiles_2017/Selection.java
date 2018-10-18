@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public final class Selection
 {
-    public static enum Operator {
+    public enum Operator {
         TRUNCATION, TOURNAMENT, LINEARRANKING, ROUNDROBIN
     }
 

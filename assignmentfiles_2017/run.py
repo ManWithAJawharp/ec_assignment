@@ -89,7 +89,7 @@ def run_function(evaluation, iterations=1, arguments={}):
               f"{sum(scores) / len(scores)}")
         print(f"Total runtime: {total_runtime:.2f}s\n")
 
-    return scores, best_fitness, average_fitness
+    return scores, best_fitness, average_fitness, variables
 
 
 def parse_output(stdout):
@@ -162,10 +162,8 @@ def main():
     for key in DEFAULT_PARAMS:
         arguments[key] = arg_arguments[key]
 
-    # arguments = DEFAULT_PARAMS
-
     for idx, evaluation in enumerate(evaluations):
-        scores, best_fitness, average_fitness = \
+        scores, best_fitness, average_fitness, variables = \
                 run_function(evaluation, args.iterations, arguments)
 
         plt.figure()
@@ -181,15 +179,36 @@ def main():
         else:
             # Otherwise, also plot the distribution over the collected
             # scores as a histogram.
-            plt.subplot(121)
-            plt.title("Performance of first run")
-            plt.plot(best_fitness[0], label="Best fitness")
-            plt.plot(average_fitness[0], label="Average fitness")
+            plt.subplot(131)
+            plt.title("Performance of last run")
+            plt.plot(best_fitness[-1], label="Best fitness")
+            plt.plot(average_fitness[-1], label="Average fitness")
+
             plt.xlabel("Generation")
             plt.ylabel("Fitness")
             plt.legend()
 
-            plt.subplot(122)
+            plt.subplot(232)
+            plt.title("Best individual per island")
+            for i in range(arguments['islands']):
+                plt.plot(variables[f'best_fitness_{i}'],
+                         label=f'Island {i+1}')
+
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.legend()
+
+            plt.subplot(235)
+            plt.title("Individual average per island")
+            for i in range(arguments['islands']):
+                plt.plot(variables[f'average_fitness_{i}'],
+                         label=f'Island {i+1}')
+
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.legend()
+
+            plt.subplot(133)
             plt.title("Distribution over scores")
             plt.hist(scores, density=True)
             plt.xlabel("Score")

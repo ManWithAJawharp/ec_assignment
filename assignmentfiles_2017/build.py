@@ -30,3 +30,4 @@ for path in paths:
         class_files.append(path)
 
 call(["jar", "cmf", "MainClass.txt", "submission.jar"] + class_files)
+call(["jar", "cmf", "MainClass.txt", "submission.jar"] + class_files)
