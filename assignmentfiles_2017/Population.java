@@ -26,8 +26,8 @@ public class Population
     private Selection.Operator selectionOp_;
 
     public Population(int n_agents, int n_parents, int n_children, int tournamentSize,
-            double shareRadius, double expectedOffspring, Random rand,
-            Selection.Operator selectionOp)
+        double shareRadius, double expectedOffspring, Random rand,
+        Selection.Operator selectionOp)
     {
         rand_ = rand;
 
@@ -243,6 +243,11 @@ public class Population
         }
 
         agents_ = joinGroups(parents_, offspring_);
+    }
+
+    public String getSelectionOp()
+    {
+        return selectionOp_.name();
     }
 
     // Returns the highest fitness in this population.

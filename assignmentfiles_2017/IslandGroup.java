@@ -14,15 +14,13 @@ public class IslandGroup
     private Population[] islands_;
 
     public IslandGroup(int n_islands, int n_agents, int n_parents,
-            int n_children, int tournamentSize, double shareRadius, double expectedOffspring,
-            Random rand, boolean randomSelectionOp)
+        int n_children, int tournamentSize, double shareRadius, double expectedOffspring,
+        Random rand, boolean randomSelectionOp, Selection.Operator selectionOp)
     {
         rand_ = rand;
+        StringBuilder sb = new StringBuilder();
 
         islands_ = new Population[n_islands];
-
-        Selection.Operator selectionOp;
-        selectionOp = Selection.Operator.ROUNDROBIN;
 
         for (int i = 0; i < n_islands; i++)
         {
@@ -30,6 +28,7 @@ public class IslandGroup
             {
                 // Select an integer from 1 to 3.
                 int selection = rand_.nextInt(3) + 1;
+                // int selection = rand_.nextInt(4);
 
                 selectionOp = Selection.Operator.values()[selection];
             }
@@ -41,7 +40,18 @@ public class IslandGroup
             population.initFitness();
 
             islands_[i] = population;
+
+            sb.append("operator_island_");
+            sb.append(i);
+            sb.append(": ");
+            sb.append(islands_[i].getSelectionOp());
+            if (i < n_islands - 1)
+            {
+                sb.append("\n");
+            }
         }
+
+        out.println(sb);
     }
 
     public void step()
@@ -150,7 +160,7 @@ public class IslandGroup
             sb.append(i);
             sb.append(": ");
             sb.append(avgFitnesses[i]);
-            
+            sb.append("\n");
             if (i < islands_.length - 1)
             {
                 sb.append("\n");

@@ -31,6 +31,7 @@ public class player63 implements ContestSubmission
     private double expectedOffspring; // Linear ranking parameter.
 
     private boolean randomSelectionOp;
+    private Selection.Operator selectionOp;
 
 	public player63()
 	{
@@ -84,6 +85,8 @@ public class player63 implements ContestSubmission
         expectedOffspring = Double.parseDouble(System.getProperty("expectedOffspring", "2"));
 
         randomSelectionOp = Boolean.parseBoolean(System.getProperty("randomSelectionOp", "false"));
+        selectionOp = Selection.Operator.values()[
+            Integer.parseInt(System.getProperty("selectionOp", "2"))];
     }
     
 	public void run()
@@ -96,7 +99,7 @@ public class player63 implements ContestSubmission
 
         // Initialize population.
         islands_ = new IslandGroup(n_islands, n_agents, n_parents, n_children, tournamentSize,
-                fitnessSharing, expectedOffspring, rnd_, randomSelectionOp);
+                fitnessSharing, expectedOffspring, rnd_, randomSelectionOp, selectionOp);
         evals += islands_.evaluate(evaluation_, evals, evaluations_limit_);
 
         int generations = 0;

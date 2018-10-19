@@ -27,7 +27,7 @@ DEFAULT_PARAMS = {
     # Number of children generated per generation.
     'children': 50,
     # Number of agents selected for a selection tournament.
-    'tournamentSize': 20,
+    'tournamentSize': 10,
 
     # Probability of mutation.
     'mutationProb': 0.1,
@@ -35,6 +35,9 @@ DEFAULT_PARAMS = {
     'fitnessSharing': 0.0,
     # Selection pressure for linear ranking.
     'expectedOffspring': 2.0,
+
+    'randomSelectionOp': "false",
+    'selectionOp': 3
 }
 
 
@@ -103,12 +106,15 @@ def parse_output(stdout):
     variables = {}
 
     for line in output:
-        name, value = line.split(':')
+        try:
+            name, value = line.split(':')
+        except ValueError:
+            continue
 
         try:
             value = float(value.strip())
         except ValueError:
-            continue
+            value = value.strip()
 
         try:
             variables[name].append(value)
@@ -126,6 +132,9 @@ def main():
     parser.add_argument('--evaluation', '-e', default=None,
                         help=("The evaluation function to run. If not set, all"
                               " functions will be run."))
+    parser.add_argument('--output', '-o', default=None,
+                        help="Name of the file to output the scores to.",
+                        type=str)
 
     for key in DEFAULT_PARAMS:
         value_type = type(DEFAULT_PARAMS[key])
@@ -166,55 +175,54 @@ def main():
         scores, best_fitness, average_fitness, variables = \
                 run_function(evaluation, args.iterations, arguments)
 
-        plt.figure()
-        # If the functions is run only once, only plot the run's
-        # performance.
-        if args.iterations is 1:
-            plt.title("Performance")
-            plt.plot(best_fitness[0], label="Best fitness")
-            plt.plot(average_fitness[0], label="Average fitness")
-            plt.xlabel("Generation")
-            plt.ylabel("Fitness")
-            plt.legend()
+        plt.figure(idx, figsize=(16, 8))
+        plt.subplot(131)
+        plt.title("Performance over all islands")
+        plt.plot(best_fitness[-1], label="Best fitness")
+        plt.plot(average_fitness[-1], label="Average fitness")
+
+        plt.xlabel("Generation")
+        plt.ylabel("Fitness")
+        plt.legend()
+
+        plt.subplot(232)
+        plt.title("Best individual per island")
+        for i in range(arguments['islands']):
+            operator = variables[f'operator_island_{i}'][0]
+            plt.plot(variables[f'best_fitness_{i}'],
+                     label=f'Island {i+1} ({operator})')
+
+        plt.xlabel("Generation")
+        plt.ylabel("Fitness")
+        plt.legend()
+
+        plt.subplot(235)
+        plt.title("Individual average per island")
+        for i in range(arguments['islands']):
+            plt.plot(variables[f'average_fitness_{i}'],
+                     label=f'Island {i+1}')
+
+        plt.xlabel("Generation")
+        plt.ylabel("Fitness")
+        plt.legend()
+
+        plt.subplot(133)
+        plt.title("Distribution over scores")
+        plt.hist(scores, density=True)
+        plt.xlabel("Score")
+        plt.ylabel("Density")
+
+        if args.output is not None:
+            image_name = args.output.split('.')[0]
+            image_name = f"{image_name}_plot.png"
+            plt.savefig(image_name, bbox_inches='tight')
+
+            with open(args.output, 'w') as output_file:
+                output_file.write("id;score")
+                for idx, score in enumerate(scores):
+                    output_file.write(f"\n{idx};{score}")
         else:
-            # Otherwise, also plot the distribution over the collected
-            # scores as a histogram.
-            plt.subplot(131)
-            plt.title("Performance of last run")
-            plt.plot(best_fitness[-1], label="Best fitness")
-            plt.plot(average_fitness[-1], label="Average fitness")
-
-            plt.xlabel("Generation")
-            plt.ylabel("Fitness")
-            plt.legend()
-
-            plt.subplot(232)
-            plt.title("Best individual per island")
-            for i in range(arguments['islands']):
-                plt.plot(variables[f'best_fitness_{i}'],
-                         label=f'Island {i+1}')
-
-            plt.xlabel("Generation")
-            plt.ylabel("Fitness")
-            plt.legend()
-
-            plt.subplot(235)
-            plt.title("Individual average per island")
-            for i in range(arguments['islands']):
-                plt.plot(variables[f'average_fitness_{i}'],
-                         label=f'Island {i+1}')
-
-            plt.xlabel("Generation")
-            plt.ylabel("Fitness")
-            plt.legend()
-
-            plt.subplot(133)
-            plt.title("Distribution over scores")
-            plt.hist(scores, density=True)
-            plt.xlabel("Score")
-            plt.ylabel("Density")
-
-        plt.show()
+            plt.show()
 
 
 if __name__ == "__main__":

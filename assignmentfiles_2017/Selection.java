@@ -41,8 +41,10 @@ public final class Selection
 
             Population.sortAgents(subset);
 
-            survivors[i] = agentsList.get(agentsList.size() - 1);
-            agentsList.remove(agentsList.size() - 1);
+            //survivors[i] = agentsList.get(agentsList.size() - 1);
+            //agentsList.remove(agentsList.size() - 1);
+
+            survivors[i] = subset[tournamentSize - 1];
         }
 
         return survivors;
