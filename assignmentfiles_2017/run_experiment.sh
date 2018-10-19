@@ -1,4 +1,4 @@
-runs=100
+runs=200
 results=results
 
 mkdir -p $results
