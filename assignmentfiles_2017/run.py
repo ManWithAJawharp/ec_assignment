@@ -124,6 +124,49 @@ def parse_output(stdout):
     return variables
 
 
+def plot_results(num=None, best_fitness=[], average_fitness=[], scores=[],
+                 n_islands=1, variables={}):
+    fig = plt.figure(num, figsize=(16, 8))
+    plt.subplot(131)
+    plt.title("Performance over all islands")
+    plt.plot(best_fitness, label="Best fitness")
+    plt.plot(average_fitness, label="Average fitness")
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+
+    plt.subplot(232)
+    plt.title("Best individual per island")
+    # for i in range(arguments['islands']):
+    for i in range(n_islands):
+        operator = variables[f'operator_island_{i}'][0]
+        plt.plot(variables[f'best_fitness_{i}'],
+                 label=f'Island {i+1} ({operator})')
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+
+    plt.subplot(235)
+    plt.title("Individual average per island")
+    for i in range(n_islands):
+        plt.plot(variables[f'average_fitness_{i}'],
+                 label=f'Island {i+1}')
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+
+    plt.subplot(133)
+    plt.title("Distribution over scores")
+    plt.hist(scores, density=True)
+    plt.xlabel("Score")
+    plt.ylabel("Density")
+
+    return fig
+
+
 def main():
     # Parse the arguments.
     parser = argparse.ArgumentParser()
@@ -174,53 +217,24 @@ def main():
     for idx, evaluation in enumerate(evaluations):
         scores, best_fitness, average_fitness, variables = \
                 run_function(evaluation, args.iterations, arguments)
-
-        plt.figure(idx, figsize=(16, 8))
-        plt.subplot(131)
-        plt.title("Performance over all islands")
-        plt.plot(best_fitness[-1], label="Best fitness")
-        plt.plot(average_fitness[-1], label="Average fitness")
-
-        plt.xlabel("Generation")
-        plt.ylabel("Fitness")
-        plt.legend()
-
-        plt.subplot(232)
-        plt.title("Best individual per island")
-        for i in range(arguments['islands']):
-            operator = variables[f'operator_island_{i}'][0]
-            plt.plot(variables[f'best_fitness_{i}'],
-                     label=f'Island {i+1} ({operator})')
-
-        plt.xlabel("Generation")
-        plt.ylabel("Fitness")
-        plt.legend()
-
-        plt.subplot(235)
-        plt.title("Individual average per island")
-        for i in range(arguments['islands']):
-            plt.plot(variables[f'average_fitness_{i}'],
-                     label=f'Island {i+1}')
-
-        plt.xlabel("Generation")
-        plt.ylabel("Fitness")
-        plt.legend()
-
-        plt.subplot(133)
-        plt.title("Distribution over scores")
-        plt.hist(scores, density=True)
-        plt.xlabel("Score")
-        plt.ylabel("Density")
+        fig = plot_results(idx, best_fitness[-1], average_fitness[-1], scores,
+                           arguments['islands'], variables)
 
         if args.output is not None:
             image_name = args.output.split('.')[0]
             image_name = f"{image_name}_plot.png"
-            plt.savefig(image_name, bbox_inches='tight')
+            fig.savefig(image_name, bbox_inches='tight')
 
             with open(args.output, 'w') as output_file:
-                output_file.write("id;score")
+                output_file.write(
+                    "id;score;" + ';'.join([f"best_{i}"
+                                            for i in range(10)]))
                 for idx, score in enumerate(scores):
-                    output_file.write(f"\n{idx};{score}")
+                    intermediate = variables['best_fitness'][::len(
+                        variables['best_fitness'])//10]
+                    line = f"\n{idx};{score};"
+                    line = line + ';'.join([str(x) for x in intermediate])
+                    output_file.write(line)
         else:
             plt.show()
 
