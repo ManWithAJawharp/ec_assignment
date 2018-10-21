@@ -223,20 +223,25 @@ public class Population
     // Kill a subset of the population to get it back to the original number.
     public void trimPopulation()
     {
+        Agent[] survivors;
+
         switch (selectionOp_)
         {
+            case TRUNCATION:
+                survivors = Selection.truncation(
+                    populationSize_ - offspring_.length, agents_);
             case TOURNAMENT:
-                parents_ = Selection.tournament(
+                survivors = Selection.tournament(
                     populationSize_ - offspring_.length, tournamentSize_,
                     agents_);
                 break;
             case LINEARRANKING:
-                parents_ = Selection.linearRanking(
+                survivors = Selection.linearRanking(
                     populationSize_ - offspring_.length, expectedOffspring_,
                     agents_);
                 break;
             case ROUNDROBIN:
-                parents_ = Selection.roundRobin(
+                survivors = Selection.roundRobin(
                     populationSize_ - offspring_.length, tournamentSize_,
                     agents_);
                 break;
